@@ -283,7 +283,7 @@ module ariane_top (
     ariane_axi::r_chan_t axi_resp_i_r_chan;
     assign axi_resp_i_r_chan.id = io_axi_imem_rid;
     assign axi_resp_i_r_chan.data = io_axi_imem_rdata;
-    assign axi_resp_i_r_chan.resp_t resp = io_axi_imem_rresp;
+    assign axi_resp_i_r_chan.resp_t = io_axi_imem_rresp;
     assign axi_resp_i_r_chan.last = io_axi_imem_rlast;
     assign axi_resp_i_r_chan.user = io_axi_imem_ruser;
 
@@ -292,7 +292,7 @@ module ariane_top (
     assign axi_resp_i.ar_ready = io_axi_imem_arready;
     assign axi_resp_i.w_ready = io_axi_imem_wready;
     assign axi_resp_i.b_valid = io_axi_imem_bvalid;
-    assign axi_resp_i.b := axi_resp_i_b_chan;
+    assign axi_resp_i.b = axi_resp_i_b_chan;
     assign axi_resp_i.r_valid = io_axi_imem_rvalid;
     assign axi_resp_i_r = axi_resp_i_r_chan;
 
@@ -314,8 +314,8 @@ module ariane_top (
         .debug_req_i(debug_req_i),      // debug request (async)
 
         // memory side, AXI Master
-        axi_req_o.(axi_resp_o),
-        axi_resp_i.(axi_resp_i)
+        .axi_req_o(axi_req_o),
+        .axi_resp_i(axi_resp_i)
     );
 
 endmodule
