@@ -13,50 +13,50 @@ module ariane_top (
     input  logic                         debug_req_i,  // debug request (async)
 
     // memory side, AXI Master
-    output  logic [3:0]                             io_axi_imem_awid,
-    output  logic [63:0]                            io_axi_imem_awaddr,
-    output  logic [7:0]                             io_axi_imem_awlen,
-    output  logic [2:0]                             io_axi_imem_awsize,
-    output  logic [1:0]                             io_axi_imem_awburst,
-    output  logic                                   io_axi_imem_awlock,
-    output  logic [3:0]                             io_axi_imem_awcache,
-    output  logic [2:0]                             io_axi_imem_awprot,
-    output  logic [3:0]                             io_axi_imem_awregion,
-    output  logic [3:0]                             io_axi_imem_awuser,
-    output  logic [3:0]                             io_axi_imem_awqos,
-    output  logic                                   io_axi_imem_awvalid,
-    input   logic                                   io_axi_imem_awready,
-    output  logic [63:0]                            io_axi_imem_wdata,
-    output  logic [7:0]                             io_axi_imem_wstrb,
-    output  logic                                   io_axi_imem_wlast,
-    output  logic [3:0]                             io_axi_imem_wuser,
-    output  logic                                   io_axi_imem_wvalid,
-    input   logic                                   io_axi_imem_wready,
-    input   logic [3:0]                             io_axi_imem_bid,
-    input   logic [1:0]                             io_axi_imem_bresp,
-    input   logic                                   io_axi_imem_bvalid,
-    input   logic [3:0]                             io_axi_imem_buser,
-    output  logic                                   io_axi_imem_bready,
-    output  logic [3:0]                             io_axi_imem_arid,
-    output  logic [63:0]                            io_axi_imem_araddr,
-    output  logic [7:0]                             io_axi_imem_arlen,
-    output  logic [2:0]                             io_axi_imem_arsize,
-    output  logic [1:0]                             io_axi_imem_arburst,
-    output  logic                                   io_axi_imem_arlock,
-    output  logic [3:0]                             io_axi_imem_arcache,
-    output  logic [2:0]                             io_axi_imem_arprot,
-    output  logic [3:0]                             io_axi_imem_arregion,
-    output  logic [3:0]                             io_axi_imem_aruser,
-    output  logic [3:0]                             io_axi_imem_arqos,
-    output  logic                                   io_axi_imem_arvalid,
-    input   logic                                   io_axi_imem_arready,
-    input   logic [3:0]                             io_axi_imem_rid,
-    input   logic [63:0]                            io_axi_imem_rdata,
-    input   logic [1:0]                             io_axi_imem_rresp,
-    input   logic                                   io_axi_imem_rlast,
-    input   logic [3:0]                             io_axi_imem_ruser,
-    input   logic                                   io_axi_imem_rvalid,
-    output  logic                                   io_axi_imem_rready
+    output  logic [3:0]                             io_axi_mem_awid,
+    output  logic [63:0]                            io_axi_mem_awaddr,
+    output  logic [7:0]                             io_axi_mem_awlen,
+    output  logic [2:0]                             io_axi_mem_awsize,
+    output  logic [1:0]                             io_axi_mem_awburst,
+    output  logic                                   io_axi_mem_awlock,
+    output  logic [3:0]                             io_axi_mem_awcache,
+    output  logic [2:0]                             io_axi_mem_awprot,
+    output  logic [3:0]                             io_axi_mem_awregion,
+    output  logic [3:0]                             io_axi_mem_awuser,
+    output  logic [3:0]                             io_axi_mem_awqos,
+    output  logic                                   io_axi_mem_awvalid,
+    input   logic                                   io_axi_mem_awready,
+    output  logic [63:0]                            io_axi_mem_wdata,
+    output  logic [7:0]                             io_axi_mem_wstrb,
+    output  logic                                   io_axi_mem_wlast,
+    output  logic [3:0]                             io_axi_mem_wuser,
+    output  logic                                   io_axi_mem_wvalid,
+    input   logic                                   io_axi_mem_wready,
+    input   logic [3:0]                             io_axi_mem_bid,
+    input   logic [1:0]                             io_axi_mem_bresp,
+    input   logic                                   io_axi_mem_bvalid,
+    input   logic [3:0]                             io_axi_mem_buser,
+    output  logic                                   io_axi_mem_bready,
+    output  logic [3:0]                             io_axi_mem_arid,
+    output  logic [63:0]                            io_axi_mem_araddr,
+    output  logic [7:0]                             io_axi_mem_arlen,
+    output  logic [2:0]                             io_axi_mem_arsize,
+    output  logic [1:0]                             io_axi_mem_arburst,
+    output  logic                                   io_axi_mem_arlock,
+    output  logic [3:0]                             io_axi_mem_arcache,
+    output  logic [2:0]                             io_axi_mem_arprot,
+    output  logic [3:0]                             io_axi_mem_arregion,
+    output  logic [3:0]                             io_axi_mem_aruser,
+    output  logic [3:0]                             io_axi_mem_arqos,
+    output  logic                                   io_axi_mem_arvalid,
+    input   logic                                   io_axi_mem_arready,
+    input   logic [3:0]                             io_axi_mem_rid,
+    input   logic [63:0]                            io_axi_mem_rdata,
+    input   logic [1:0]                             io_axi_mem_rresp,
+    input   logic                                   io_axi_mem_rlast,
+    input   logic [3:0]                             io_axi_mem_ruser,
+    input   logic                                   io_axi_mem_rvalid,
+    output  logic                                   io_axi_mem_rready
 );
 
     /*
@@ -75,15 +75,15 @@ module ariane_top (
     typedef logic [StrbWidth-1:0] strb_t;
     typedef logic [UserWidth-1:0] user_t;
 
-    logic io_axi_imem_awvalid;
-    logic io_axi_imem_wvalid;
-    logic io_axi_imem_bready;
-    logic io_axi_imem_arvalid;
-    logic io_axi_imem_rready;
-    logic io_axi_imem_awlock;
-    id_t  io_axi_imem_awid;
-    addr_t io_axi_imem_awaddr;
-    user_t io_axi_imem_awuser;
+    logic io_axi_mem_awvalid;
+    logic io_axi_mem_wvalid;
+    logic io_axi_mem_bready;
+    logic io_axi_mem_arvalid;
+    logic io_axi_mem_rready;
+    logic io_axi_mem_awlock;
+    id_t  io_axi_mem_awid;
+    addr_t io_axi_mem_awaddr;
+    user_t io_axi_mem_awuser;
 
     typedef logic [1:0] burst_t;
     typedef logic [1:0] resp_t;
@@ -96,31 +96,31 @@ module ariane_top (
     typedef logic [5:0] atop_t; // atomic operations
     typedef logic [3:0] nsaid_t; // non-secure address identifier
 
-    len_t    io_axi_imem_awlen;
-    size_t   io_axi_imem_awsize;
-    burst_t  io_axi_imem_awburst;
-    cache_t  io_axi_imem_awcache;
-    prot_t   io_axi_imem_awprot;
-    qos_t    io_axi_imem_awqos;
-    region_t io_axi_imem_awregion;
-    atop_t   io_axi_imem_awatop;
+    len_t    io_axi_mem_awlen;
+    size_t   io_axi_mem_awsize;
+    burst_t  io_axi_mem_awburst;
+    cache_t  io_axi_mem_awcache;
+    prot_t   io_axi_mem_awprot;
+    qos_t    io_axi_mem_awqos;
+    region_t io_axi_mem_awregion;
+    atop_t   io_axi_mem_awatop;
     
-    data_t io_axi_imem_wdata;
-    strb_t io_axi_imem_wstrb;
-    logic  io_axi_imem_wlast;
-    user_t io_axi_imem_wuser;
+    data_t io_axi_mem_wdata;
+    strb_t io_axi_mem_wstrb;
+    logic  io_axi_mem_wlast;
+    user_t io_axi_mem_wuser;
 
-    id_t     io_axi_imem_arid;
-    addr_t   io_axi_imem_araddr;
-    len_t    io_axi_imem_arlen;
-    size_t   io_axi_imem_arsize;
-    burst_t  io_axi_imem_arburst;
-    logic    io_axi_imem_arlock;
-    cache_t  io_axi_imem_arcache;
-    prot_t   io_axi_imem_arprot;
-    qos_t    io_axi_imem_arqos;
-    region_t io_axi_imem_arregion;
-    user_t   io_axi_imem_aruser;
+    id_t     io_axi_mem_arid;
+    addr_t   io_axi_mem_araddr;
+    len_t    io_axi_mem_arlen;
+    size_t   io_axi_mem_arsize;
+    burst_t  io_axi_mem_arburst;
+    logic    io_axi_mem_arlock;
+    cache_t  io_axi_mem_arcache;
+    prot_t   io_axi_mem_arprot;
+    qos_t    io_axi_mem_arqos;
+    region_t io_axi_mem_arregion;
+    user_t   io_axi_mem_aruser;
     */
 
     ariane_axi::req_t axi_req_o;
@@ -183,44 +183,44 @@ module ariane_top (
     assign axi_req_o_aw = axi_req_o.aw;
     assign axi_req_o_w = axi_req_o.w;
     assign axi_req_o_ar = axi_req_o.ar;
-    assign io_axi_imem_awvalid = axi_req_o.aw_valid;
-    assign io_axi_imem_wvalid = axi_req_o.w_valid;
-    assign io_axi_imem_bready = axi_req_o.b_ready;
-    assign io_axi_imem_arvalid = axi_req_o.ar_valid;
-    assign io_axi_imem_rready = axi_req_o.r_ready;
+    assign io_axi_mem_awvalid = axi_req_o.aw_valid;
+    assign io_axi_mem_wvalid = axi_req_o.w_valid;
+    assign io_axi_mem_bready = axi_req_o.b_ready;
+    assign io_axi_mem_arvalid = axi_req_o.ar_valid;
+    assign io_axi_mem_rready = axi_req_o.r_ready;
 
     // axi_req_o_aw aw_chant_t signals
 
-    assign io_axi_imem_awid = axi_req_o_aw.id;
-    assign io_axi_imem_awaddr = axi_req_o_aw.addr;
-    assign io_axi_imem_awlen = axi_req_o_aw.len;
-    assign io_axi_imem_awsize = axi_req_o_aw.size;
-    assign io_axi_imem_awburst = axi_req_o_aw.burst;
-    assign io_axi_imem_awlock = axi_req_o_aw.lock;
-    assign io_axi_imem_awcache = axi_req_o_aw.cache;
-    assign io_axi_imem_awprot = axi_req_o_aw.prot;
-    assign io_axi_imem_awqos = axi_req_o_aw.qos;
-    assign io_axi_imem_awregion = axi_req_o_aw.region;
-    assign io_axi_imem_awatop = axi_req_o_aw.atop;
-    assign io_axi_imem_awuser = axi_req_o_aw.user;
+    assign io_axi_mem_awid = axi_req_o_aw.id;
+    assign io_axi_mem_awaddr = axi_req_o_aw.addr;
+    assign io_axi_mem_awlen = axi_req_o_aw.len;
+    assign io_axi_mem_awsize = axi_req_o_aw.size;
+    assign io_axi_mem_awburst = axi_req_o_aw.burst;
+    assign io_axi_mem_awlock = axi_req_o_aw.lock;
+    assign io_axi_mem_awcache = axi_req_o_aw.cache;
+    assign io_axi_mem_awprot = axi_req_o_aw.prot;
+    assign io_axi_mem_awqos = axi_req_o_aw.qos;
+    assign io_axi_mem_awregion = axi_req_o_aw.region;
+    assign io_axi_mem_awatop = axi_req_o_aw.atop;
+    assign io_axi_mem_awuser = axi_req_o_aw.user;
 
     // w_chan_t axi_req_o_w
-    assign io_axi_imem_wdata = axi_req_o_w.data;
-    assign io_axi_imem_wstrb = axi_req_o_w.strb;
-    assign io_axi_imem_wlast = axi_req_o_w.last;
-    assign io_axi_imem_wuser = axi_req_o_w.user;
+    assign io_axi_mem_wdata = axi_req_o_w.data;
+    assign io_axi_mem_wstrb = axi_req_o_w.strb;
+    assign io_axi_mem_wlast = axi_req_o_w.last;
+    assign io_axi_mem_wuser = axi_req_o_w.user;
 
-    assign io_axi_imem_arid = axi_req_o_ar.id;
-    assign io_axi_imem_araddr = axi_req_o_ar.addr;
-    assign io_axi_imem_arlen = axi_req_o_ar.len;
-    assign io_axi_imem_arsize = axi_req_o_ar.size;
-    assign io_axi_imem_arburst = axi_req_o_ar.burst;
-    assign io_axi_imem_arlock = axi_req_o_ar.lock;
-    assign io_axi_imem_arcache = axi_req_o_ar.cache;
-    assign io_axi_imem_arprot = axi_req_o_ar.prot;
-    assign io_axi_imem_arqos = axi_req_o_ar.qos;
-    assign io_axi_imem_arregion = axi_req_o_ar.region;
-    assign io_axi_imem_aruser = axi_req_o_ar.user;
+    assign io_axi_mem_arid = axi_req_o_ar.id;
+    assign io_axi_mem_araddr = axi_req_o_ar.addr;
+    assign io_axi_mem_arlen = axi_req_o_ar.len;
+    assign io_axi_mem_arsize = axi_req_o_ar.size;
+    assign io_axi_mem_arburst = axi_req_o_ar.burst;
+    assign io_axi_mem_arlock = axi_req_o_ar.lock;
+    assign io_axi_mem_arcache = axi_req_o_ar.cache;
+    assign io_axi_mem_arprot = axi_req_o_ar.prot;
+    assign io_axi_mem_arqos = axi_req_o_ar.qos;
+    assign io_axi_mem_arregion = axi_req_o_ar.region;
+    assign io_axi_mem_aruser = axi_req_o_ar.user;
 
 
 
@@ -276,24 +276,24 @@ module ariane_top (
      */
 
     ariane_axi::b_chan_t axi_resp_i_b_chan;
-    assign axi_resp_i_b_chan.id = io_axi_imem_bid;
-    assign axi_resp_i_b_chan.resp = io_axi_imem_bresp;
-    assign axi_resp_i_b_chan.user = io_axi_imem_buser;
+    assign axi_resp_i_b_chan.id = io_axi_mem_bid;
+    assign axi_resp_i_b_chan.resp = io_axi_mem_bresp;
+    assign axi_resp_i_b_chan.user = io_axi_mem_buser;
 
     ariane_axi::r_chan_t axi_resp_i_r_chan;
-    assign axi_resp_i_r_chan.id = io_axi_imem_rid;
-    assign axi_resp_i_r_chan.data = io_axi_imem_rdata;
-    assign axi_resp_i_r_chan.resp_t = io_axi_imem_rresp;
-    assign axi_resp_i_r_chan.last = io_axi_imem_rlast;
-    assign axi_resp_i_r_chan.user = io_axi_imem_ruser;
+    assign axi_resp_i_r_chan.id = io_axi_mem_rid;
+    assign axi_resp_i_r_chan.data = io_axi_mem_rdata;
+    assign axi_resp_i_r_chan.resp_t = io_axi_mem_rresp;
+    assign axi_resp_i_r_chan.last = io_axi_mem_rlast;
+    assign axi_resp_i_r_chan.user = io_axi_mem_ruser;
 
     ariane_axi::resp_t axi_resp_i;
-    assign axi_resp_i.aw_ready = io_axi_imem_awready;
-    assign axi_resp_i.ar_ready = io_axi_imem_arready;
-    assign axi_resp_i.w_ready = io_axi_imem_wready;
-    assign axi_resp_i.b_valid = io_axi_imem_bvalid;
+    assign axi_resp_i.aw_ready = io_axi_mem_awready;
+    assign axi_resp_i.ar_ready = io_axi_mem_arready;
+    assign axi_resp_i.w_ready = io_axi_mem_wready;
+    assign axi_resp_i.b_valid = io_axi_mem_bvalid;
     assign axi_resp_i.b = axi_resp_i_b_chan;
-    assign axi_resp_i.r_valid = io_axi_imem_rvalid;
+    assign axi_resp_i.r_valid = io_axi_mem_rvalid;
     assign axi_resp_i_r = axi_resp_i_r_chan;
 
 
