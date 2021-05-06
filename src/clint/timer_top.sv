@@ -1,4 +1,9 @@
-module timer_top (
+module timer_top #(
+    parameter int unsigned AXI_ADDR_WIDTH = 64,
+    parameter int unsigned AXI_DATA_WIDTH = 64,
+    parameter int unsigned AXI_ID_WIDTH   = 10,
+    parameter int unsigned NR_CORES       = 1 // Number of cores therefore also the number of timecmp registers and timer interrupts
+)(
     input  logic                         clk_i,
     input  logic                         rst_ni,
     input  logic                         testmode_i,
