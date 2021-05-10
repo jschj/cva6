@@ -63,7 +63,7 @@ module timer_top #(
     // CLINT
     // ---------------
     // divide clock by two
-    always_ff @(posedge clk or negedge ndmreset_n) begin
+    always_ff @(posedge clk_i or negedge rst_ni) begin
         if (~rst_ni) begin
             rtc <= 0;
         end else begin
