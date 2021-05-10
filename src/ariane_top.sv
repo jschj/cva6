@@ -24,6 +24,7 @@ module ariane_top (
     output  logic [3:0]                             io_axi_mem_awregion,
     output  logic [3:0]                             io_axi_mem_awuser,
     output  logic [3:0]                             io_axi_mem_awqos,
+    output  logic [5:0]                             io_axi_mem_awatop,
     output  logic                                   io_axi_mem_awvalid,
     input   logic                                   io_axi_mem_awready,
     output  logic [63:0]                            io_axi_mem_wdata,
@@ -294,7 +295,7 @@ module ariane_top (
     assign axi_resp_i.b_valid = io_axi_mem_bvalid;
     assign axi_resp_i.b = axi_resp_i_b_chan;
     assign axi_resp_i.r_valid = io_axi_mem_rvalid;
-    assign axi_resp_i_r = axi_resp_i_r_chan;
+    assign axi_resp_i.r = axi_resp_i_r_chan;
 
 
 

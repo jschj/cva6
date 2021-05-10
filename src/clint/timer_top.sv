@@ -22,6 +22,7 @@ module timer_top #(
     input  logic [3:0]                             axi_timer_awregion,
     input  logic [3:0]                             axi_timer_awuser,
     input  logic [3:0]                             axi_timer_awqos,
+    input  logic [5:0]                             axi_timer_awatop,
     input  logic                                   axi_timer_awvalid,
     output logic                                   axi_timer_awready,
     input  logic [63:0]                            axi_timer_wdata,
@@ -143,7 +144,7 @@ module timer_top #(
     assign axi_timer_bvalid = axi_resp_i.b_valid;
     assign axi_resp_i_b_chan = axi_resp_i.b;
     assign axi_timer_rvalid = axi_resp_i.r_valid;
-    assign axi_resp_i_r_chan = axi_resp_i_r;
+    assign axi_resp_i_r_chan = axi_resp_i.r;
 
     clint#(
 
