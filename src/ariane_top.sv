@@ -284,7 +284,7 @@ module ariane_top (
     ariane_axi::r_chan_t axi_resp_i_r_chan;
     assign axi_resp_i_r_chan.id = io_axi_mem_rid;
     assign axi_resp_i_r_chan.data = io_axi_mem_rdata;
-    assign axi_resp_i_r_chan.resp_t = io_axi_mem_rresp;
+    assign axi_resp_i_r_chan.resp = io_axi_mem_rresp;
     assign axi_resp_i_r_chan.last = io_axi_mem_rlast;
     assign axi_resp_i_r_chan.user = io_axi_mem_ruser;
 

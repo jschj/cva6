@@ -133,7 +133,7 @@ module timer_top #(
     ariane_axi::r_chan_t axi_resp_i_r_chan;
     assign axi_timer_rid = axi_resp_i_r_chan.id;
     assign axi_timer_rdata = axi_resp_i_r_chan.data;
-    assign axi_timer_rresp = axi_resp_i_r_chan.resp_t;
+    assign axi_timer_rresp = axi_resp_i_r_chan.resp;
     assign axi_timer_rlast = axi_resp_i_r_chan.last;
     assign axi_timer_ruser = axi_resp_i_r_chan.user;
 
