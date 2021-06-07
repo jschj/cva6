@@ -39,7 +39,7 @@ module ariane_custom_tb_top #(
     ariane_axi_soc::req_t    axi_ariane_req;
     ariane_axi_soc::resp_t   axi_ariane_resp;
 
-    ariane_pkg::ariane_cfg_t ArianeCfg = ariane_pkg::ArianeDefaultConfig;
+    localparam ariane_pkg::ariane_cfg_t ArianeCfg = ariane_pkg::ArianeDefaultConfig;
 
     ariane#(
         .ArianeCfg(ArianeCfg)
