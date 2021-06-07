@@ -13,6 +13,8 @@
 // Description: Test-harness for Ariane
 //              Instantiates an AXI-Bus and memories
 
+import ariane_pkg::*;
+
 module ariane_custom_tb_top #(
     parameter int unsigned AXI_USER_WIDTH    = 1,
     parameter int unsigned AXI_ADDRESS_WIDTH = 64,
