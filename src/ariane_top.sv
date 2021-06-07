@@ -297,10 +297,10 @@ module ariane_top (
     assign axi_resp_i.r_valid = io_axi_mem_rvalid;
     assign axi_resp_i.r = axi_resp_i_r_chan;
 
-
+    ariane_pkg::ariane_cfg_t ArianeCfg = ariane_pkg::ArianeDefaultConfig;
 
     ariane#(
-
+        .ArianeCfg(ArianeCfg)
     ) core(
         .clk_i(clk_i),
         .rst_ni(rst_ni),
