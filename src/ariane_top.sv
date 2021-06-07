@@ -1,3 +1,5 @@
+import ariane_pkg::*;
+
 module ariane_top (
     input  logic                         clk_i,
     input  logic                         rst_ni,
