@@ -23,10 +23,19 @@ module ariane_custom_tb_top #(
     parameter bit          StallRandomOutput = 1'b0,
     parameter bit          StallRandomInput  = 1'b0
 ) (
-    input  logic                           clk_i,
-    input  logic                           rtc_i,
-    input  logic                           rst_ni,
-    output logic [31:0]                    exit_o
+    input  logic                         clk_i,
+    input  logic                         rst_ni,
+    // Core ID, Cluster ID and boot address are considered more or less static
+    input  logic [63:0]                  boot_addr_i,  // reset boot address
+    input  logic [63:0]                  hart_id_i,    // hart id in a multicore environment (reflected in a CSR)
+
+    // Interrupt inputs
+    input  logic [1:0]                   irq_i,        // level sensitive IR lines, mip & sip (async)
+    input  logic                         ipi_i,        // inter-processor interrupts (async)
+    // Timer facilities
+    input  logic                         time_irq_i,   // timer interrupt in (async)
+    input  logic                         debug_req_i,  // debug request (async)
+
 );
 
     ariane_axi_soc::req_t    axi_ariane_req;
@@ -69,6 +78,13 @@ module ariane_custom_tb_top #(
         .master(dram_delayed)
     );
 
+    logic                         req;
+    logic                         we;
+    logic [AXI_ADDRESS_WIDTH-1:0] addr;
+    logic [AXI_DATA_WIDTH/8-1:0]  be;
+    logic [AXI_DATA_WIDTH-1:0]    wdata;
+    logic [AXI_DATA_WIDTH-1:0]    rdata;
+
     axi2mem #(
         .AXI_ID_WIDTH   ( IdWidth ),
         .AXI_ADDR_WIDTH ( AXI_ADDRESS_WIDTH        ),
@@ -76,7 +92,7 @@ module ariane_custom_tb_top #(
         .AXI_USER_WIDTH ( AXI_USER_WIDTH           )
     ) i_axi2mem (
         .clk_i  ( clk_i        ),
-        .rst_ni ( ndmreset_n   ),
+        .rst_ni ( rst_ni   ),
         .slave  ( dram_delayed ),
         .req_o  ( req          ),
         .we_o   ( we           ),
