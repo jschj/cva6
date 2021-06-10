@@ -21,8 +21,8 @@ module ariane_custom_tb_top #(
     parameter bit          StallRandomOutput = 1'b0,
     parameter bit          StallRandomInput  = 1'b0
 ) (
-    input  logic                         clk_i,
-    input  logic                         rst_ni,
+    input  logic                         clk,
+    input  logic                         rst_n,
     // Core ID, Cluster ID and boot address are considered more or less static
     input  logic [63:0]                  boot_addr_i,  // reset boot address
     input  logic [63:0]                  hart_id_i,    // hart id in a multicore environment (reflected in a CSR)
@@ -34,7 +34,18 @@ module ariane_custom_tb_top #(
     input  logic                         time_irq_i,   // timer interrupt in (async)
     input  logic                         debug_req_i,  // debug request (async)
 
+    // DM Interface
+    input   logic                                   dmi_req,                // DMI request
+    input   logic                                   dmi_wr,                 // DMI write
+    input   logic [7-1:0]     dmi_addr,               // DMI address
+    input   logic [32-1:0]     dmi_wdata,              // DMI write data
+    output  logic [32-1:0]     dmi_rdata              // DMI read data
+
 );
+
+    logic clk_i, rst_ni;
+    assign clk_i = clk;
+    assign rst_ni = rst_n;
 
     ariane_axi_soc::req_t    axi_ariane_req;
     ariane_axi_soc::resp_t   axi_ariane_resp;
