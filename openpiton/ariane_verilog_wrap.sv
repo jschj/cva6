@@ -13,7 +13,9 @@
 // Description: Ariane Top-level wrapper to break out SV structs to logic vectors.
 
 
-module ariane_verilog_wrap #(
+module ariane_verilog_wrap
+    import ariane_pkg::*;
+#(
   parameter int unsigned               RASDepth              = 2,
   parameter int unsigned               BTBEntries            = 32,
   parameter int unsigned               BHTEntries            = 128,
@@ -41,8 +43,8 @@ module ariane_verilog_wrap #(
   input                       reset_l,      // this is an openpiton-specific name, do not change (hier. paths in TB use this)
   output                      spc_grst_l,   // this is an openpiton-specific name, do not change (hier. paths in TB use this)
   // Core ID, Cluster ID and boot address are considered more or less static
-  input  [63:0]               boot_addr_i,  // reset boot address
-  input  [63:0]               hart_id_i,    // hart id in a multicore environment (reflected in a CSR)
+  input  [riscv::VLEN-1:0]               boot_addr_i,  // reset boot address
+  input  [riscv::XLEN-1:0]               hart_id_i,    // hart id in a multicore environment (reflected in a CSR)
   // Interrupt inputs
   input  [1:0]                irq_i,        // level sensitive IR lines, mip & sip (async)
   input                       ipi_i,        // inter-processor interrupts (async)
