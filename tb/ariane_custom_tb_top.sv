@@ -17,7 +17,7 @@ module ariane_custom_tb_top #(
     parameter int unsigned AXI_USER_WIDTH    = 1,
     parameter int unsigned AXI_ADDRESS_WIDTH = 64,
     parameter int unsigned AXI_DATA_WIDTH    = 64,
-    parameter int unsigned NUM_WORDS         = 2**25,         // memory size
+    parameter int unsigned NUM_WORDS         = 32768,         // memory size
     parameter bit          StallRandomOutput = 1'b0,
     parameter bit          StallRandomInput  = 1'b0
 ) (
@@ -111,7 +111,7 @@ module ariane_custom_tb_top #(
         .data_i ( rdata        )
     );
 
-    sram #(
+    tb_sram #(
         .DATA_WIDTH ( AXI_DATA_WIDTH ),
         .NUM_WORDS  ( NUM_WORDS      )
     ) i_sram (
@@ -126,3 +126,113 @@ module ariane_custom_tb_top #(
     );
 
 endmodule
+
+module tb_sram #(
+    int unsigned DATA_WIDTH = 64,
+    int unsigned NUM_WORDS  = 8096
+)(
+   input  logic                          clk_i,
+
+   input  logic                          req_i,
+   input  logic                          we_i,
+   input  logic [$clog2(NUM_WORDS)-1:0]  addr_i,
+   input  logic [DATA_WIDTH-1:0]         wdata_i,
+   input  logic [DATA_WIDTH/8-1:0]       be_i,
+   output logic [DATA_WIDTH-1:0]         rdata_o
+);
+    localparam ADDR_WIDTH = $clog2(NUM_WORDS);
+
+    logic [DATA_WIDTH-1:0] ram [NUM_WORDS-1:0];
+    logic [ADDR_WIDTH-1:0] raddr_q;
+
+    initial begin
+        ram[2048] = 64'h00000000_00000539;
+        ram[78] = 64'h00000000_00008067;
+        ram[77] = 64'h02010113_01812403;
+        ram[76] = 64'h01c12083_00078513;
+        ram[75] = 64'h00000793_ef1ff0ef;
+        ram[74] = 64'he6dff0ef_00400513;
+        ram[73] = 64'h00078593_00f707b3;
+        ram[72] = 64'hfec42783_53900713;
+        ram[71] = 64'h00e7a023_eef70713;
+        ram[70] = 64'hdeadc737_fe842783;
+        ram[69] = 64'hfef42423_000107b7;
+        ram[68] = 64'hfef42623_02a00793;
+        ram[67] = 64'hf99ff0ef_02010413;
+        ram[66] = 64'h00812c23_00112e23;
+        ram[65] = 64'hfe010113_00008067;
+        ram[64] = 64'h02010113_01812403;
+        ram[63] = 64'h01c12083_00000013;
+        ram[62] = 64'hf55ff0ef_ed1ff0ef;
+        ram[61] = 64'h00400513_fff00593;
+        ram[60] = 64'h00f70a63_fec42783;
+        ram[59] = 64'hfe842703_fef42423;
+        ram[58] = 64'h305027f3_30579073;
+        ram[57] = 64'hfec42783_fef42623;
+        ram[56] = 64'h18000793_02010413;
+        ram[55] = 64'h00812c23_00112e23;
+        ram[54] = 64'hfe010113_00008067;
+        ram[53] = 64'h01010113_00812403;
+        ram[52] = 64'h00c12083_00000013;
+        ram[51] = 64'hfadff0ef_f29ff0ef;
+        ram[50] = 64'h00400513_ffe00593;
+        ram[49] = 64'h01010413_00812423;
+        ram[48] = 64'h00112623_ff010113;
+        ram[47] = 64'h00000013_0000006f;
+        ram[46] = 64'h00e7a023_00100713;
+        ram[45] = 64'hfe842783_fef42423;
+        ram[44] = 64'h00f707b3_000047b7;
+        ram[43] = 64'hfec42703_fef42623;
+        ram[42] = 64'h110007b7_02010413;
+        ram[41] = 64'h00812e23_fe010113;
+        ram[40] = 64'h00008067_03010113;
+        ram[39] = 64'h02c12403_00078513;
+        ram[38] = 64'h0007a783_00f707b3;
+        ram[37] = 64'hfec42703_00279793;
+        ram[36] = 64'hfdc42783_fef42623;
+        ram[35] = 64'h110007b7_fca42e23;
+        ram[34] = 64'h03010413_02812623;
+        ram[33] = 64'hfd010113_00008067;
+        ram[32] = 64'h03010113_02c12403;
+        ram[31] = 64'h00000013_00e7a023;
+        ram[30] = 64'hfd842703_fe842783;
+        ram[29] = 64'hfef42423_00f707b3;
+        ram[28] = 64'hfec42703_00279793;
+        ram[27] = 64'hfdc42783_fef42623;
+        ram[26] = 64'h110007b7_fcb42c23;
+        ram[25] = 64'hfca42e23_03010413;
+        ram[24] = 64'h02812623_fd010113;
+        ram[16] = 64'h188000ef_00010113;
+        ram[15] = 64'h00008137_00000f93;
+        ram[14] = 64'h00000f13_00000e93;
+        ram[13] = 64'h00000e13_00000d93;
+        ram[12] = 64'h00000d13_00000c93;
+        ram[11] = 64'h00000c13_00000b93;
+        ram[10] = 64'h00000b13_00000a93;
+        ram[9] = 64'h00000a13_00000993;
+        ram[8] = 64'h00000913_00000893;
+        ram[7] = 64'h00000813_00000793;
+        ram[6] = 64'h00000713_00000693;
+        ram[5] = 64'h00000613_00000593;
+        ram[4] = 64'h00000513_00000493;
+        ram[3] = 64'h00000413_00000393;
+        ram[2] = 64'h00000313_00000293;
+        ram[1] = 64'h00000213_00000193;
+        ram[0] = 64'h00000113_00000093;
+    end
+
+    always_ff @(posedge clk_i) begin
+        if (req_i) begin
+            if (!we_i) begin
+                raddr_q <= addr_i;
+            end else begin
+                for (int i = 0; i < DATA_WIDTH / 8; i++)
+                    if (be_i[i]) ram[addr_i][(i+1)* 8 - 1:i*8] <= wdata_i[(i+1)* 8 - 1:i*8];
+            end
+        end
+    end
+
+    assign rdata_o = ram[raddr_q];
+
+endmodule
+
