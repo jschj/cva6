@@ -132,6 +132,7 @@ module tb_sram #(
     int unsigned NUM_WORDS  = 8096
 )(
    input  logic                          clk_i,
+   input  logic                          rst_ni,
 
    input  logic                          req_i,
    input  logic                          we_i,
