@@ -228,7 +228,7 @@ module tb_sram #(
                 raddr_q <= addr_i;
             end else begin
                 for (int i = 0; i < DATA_WIDTH / 8; i++)
-                    if (be_i[i]) ram[addr_i][(i+1)* 8 - 1:i*8] <= wdata_i[(i+1)* 8 - 1:i*8];
+                    if (be_i[i]) ram[addr_i][i*8 +: 8] <= wdata_i[i*8 +: 8];
             end
         end
     end
