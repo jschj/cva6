@@ -12,7 +12,7 @@ module tapasco_dm_top #(
     input   logic                                   dmi_wr,   // DMI write
     input   logic [7-1:0]                           dmi_addr, // DMI address
     input   logic [32-1:0]                          dmi_wdata,// DMI write data
-    output  logic [32-1:0]                          dmi_rdata // DMI read data
+    output  logic [32-1:0]                          dmi_rdata, // DMI read data
 
     // memory side, AXI Master
     input  logic [3:0]                             axi_dm_awid,
