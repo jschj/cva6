@@ -1,4 +1,16 @@
-module ariane_top (
+module ariane_top #(
+    parameter logic[63:0] DEBUG_LENGTH    = 64'h1000,
+    parameter logic[63:0] IMEM_LENGTH      = 64'h04000,
+    parameter logic[63:0] CLINT_LENGTH    = 64'hC0000,
+    parameter logic[63:0] DMEM_LENGTH     = 64'h04000,
+    //parameter logic[63:0] DRAM_LENGTH     = 64'h04000,
+
+    parameter logic[63:0] DEBUG_BASE    = 64'h0000_0000,
+    parameter logic[63:0] IMEM_BASE      = 64'h0000_0000,
+    parameter logic[63:0] CLINT_BASE    = 64'h0200_0000,
+    //parameter logic[63:0] DRAM_BASE     = 64'h0004_0000,
+    parameter logic[63:0] DMEM_BASE     = 64'h0004_0000
+)(
     input  logic                         clk_i,
     input  logic                         rst_ni,
     // Core ID, Cluster ID and boot address are considered more or less static
@@ -297,7 +309,36 @@ module ariane_top (
     assign axi_resp_i.r_valid = io_axi_mem_rvalid;
     assign axi_resp_i.r = axi_resp_i_r_chan;
 
-    localparam ariane_pkg::ariane_cfg_t ArianeCfg = ariane_pkg::ArianeDefaultConfig;
+    localparam ariane_pkg::ariane_cfg_t ArianeCfg = '{
+        RASDepth: 2,
+        BTBEntries: 32,
+        BHTEntries: 128,
+        // idempotent region
+        NrNonIdempotentRules:  1,
+        NonIdempotentAddrBase: {64'b0},
+        //NonIdempotentLength:   {DRAM_BASE},
+        NonIdempotentLength:   {64'b0},
+        //NrExecuteRegionRules:  4,
+        NrExecuteRegionRules:  3,
+        ExecuteRegionAddrBase: {DMEM_BASE,   IMEM_BASE,   DEBUG_BASE},
+        //ExecuteRegionAddrBase: {DRAM_BASE,   DMEM_BASE,   IMEM_BASE,   DEBUG_BASE},
+        ExecuteRegionLength:   {DMEM_LENGTH, IMEM_LENGTH, DEBUG_LENGTH},
+        //ExecuteRegionLength:   {DRAM_LENGTH, DMEM_LENGTH, IMEM_LENGTH, DEBUG_LENGTH},
+        // cached region
+        NrCachedRegionRules:    0,
+        //NrCachedRegionRules:    1,
+        CachedRegionAddrBase:  {64'b0},
+        //CachedRegionAddrBase:  {DRAM_BASE},
+        CachedRegionLength:    {64'b0},
+        //CachedRegionLength:    {DRAM_LENGTH},
+        //  cache config
+        Axi64BitCompliant:      1'b1,
+        SwapEndianess:          1'b0,
+        // debug
+        DmBaseAddress:          DEBUG_BASE,
+        NrPMPEntries:           8
+    };
+
 
     ariane#(
         .ArianeCfg(ArianeCfg)

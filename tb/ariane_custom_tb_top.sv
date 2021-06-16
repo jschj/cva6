@@ -50,7 +50,49 @@ module ariane_custom_tb_top #(
     ariane_axi_soc::req_t    axi_ariane_req;
     ariane_axi_soc::resp_t   axi_ariane_resp;
 
-    localparam ariane_pkg::ariane_cfg_t ArianeCfg = ariane_pkg::ArianeDefaultConfig;
+    localparam logic[63:0] DebugLength    = 64'h1000;
+    localparam logic[63:0] ROMLength      = 64'h04000;
+    localparam logic[63:0] CLINTLength    = 64'hC0000;
+    localparam logic[63:0] DMEMLength     = 64'h04000;
+    //localparam logic[63:0] DRAMLength     = 64'h04000;
+
+    localparam logic[63:0] DebugBase    = 64'h0000_0000;
+    localparam logic[63:0] ROMBase      = 64'h0000_0000;
+    localparam logic[63:0] CLINTBase    = 64'h0200_0000;
+    //localparam logic[63:0] DRAMBase     = 64'h0004_0000;
+    localparam logic[63:0] DMEMBase     = 64'h0004_0000;
+
+
+    localparam ariane_pkg::ariane_cfg_t ArianeCfg = '{
+        RASDepth: 2,
+        BTBEntries: 32,
+        BHTEntries: 128,
+        // idempotent region
+        NrNonIdempotentRules:  1,
+        NonIdempotentAddrBase: {64'b0},
+        //NonIdempotentLength:   {DRAMBase},
+        NonIdempotentLength:   {64'b0},
+        //NrExecuteRegionRules:  4,
+        NrExecuteRegionRules:  3,
+        ExecuteRegionAddrBase: {DMEMBase,   ROMBase,   DebugBase},
+        //ExecuteRegionAddrBase: {DRAMBase,   DMEMBase,   ROMBase,   DebugBase},
+        ExecuteRegionLength:   {DMEMLength, ROMLength, DebugLength},
+        //ExecuteRegionLength:   {DRAMLength, DMEMLength, ROMLength, DebugLength},
+        // cached region
+        NrCachedRegionRules:    0,
+        //NrCachedRegionRules:    1,
+        CachedRegionAddrBase:  {64'b0},
+        //CachedRegionAddrBase:  {DRAMBase},
+        CachedRegionLength:    {64'b0},
+        //CachedRegionLength:    {DRAMLength},
+        //  cache config
+        Axi64BitCompliant:      1'b1,
+        SwapEndianess:          1'b0,
+        // debug
+        DmBaseAddress:          DebugBase,
+        NrPMPEntries:           8
+    };
+
 
     ariane#(
         .ArianeCfg(ArianeCfg)
