@@ -227,8 +227,8 @@ module tapasco_dm_top #(
         .id_o                  (                           ),
         .critical_word_o       (                           ),
         .critical_word_valid_o (                           ),
-        .dm_axi_m_req             ( dm_axi_m_req              ),
-        .dm_axi_m_resp            ( dm_axi_m_resp             )
+        .axi_req_o             ( dm_axi_m_req              ),
+        .axi_resp_i            ( dm_axi_m_resp             )
     );
 
 endmodule
