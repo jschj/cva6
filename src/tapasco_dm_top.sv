@@ -160,7 +160,7 @@ module tapasco_dm_top #(
     dm::dmi_req_t          dmi_req_i;
     // TODO this might trigger to often... add edge detection for triggering a single request?
     assign dmi_req_valid = dmi_req;
-    assign dmi_req_i.op = dmi_req ? (dmi_wr ? dm::dtm_op_e::DTM_WRITE : dm::dtm_op_e::DTM_READ) : dm::dtm_op_e::DTM_NOP;
+    assign dmi_req_i.op = dmi_req ? (dmi_wr ? dm::DTM_WRITE : dm::DTM_READ) : dm::DTM_NOP;
     assign dmi_req_i.addr = dmi_addr;
     assign dmi_req_i.data = dmi_wdata;
 
