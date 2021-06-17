@@ -15,126 +15,121 @@ module tapasco_dm_top #(
     output  logic [32-1:0]                          dmi_rdata, // DMI read data
 
     // memory side, AXI Master
-    input  logic [3:0]                             axi_dm_awid,
-    input  logic [63:0]                            axi_dm_awaddr,
-    input  logic [7:0]                             axi_dm_awlen,
-    input  logic [2:0]                             axi_dm_awsize,
-    input  logic [1:0]                             axi_dm_awburst,
-    input  logic                                   axi_dm_awlock,
-    input  logic [3:0]                             axi_dm_awcache,
-    input  logic [2:0]                             axi_dm_awprot,
-    input  logic [3:0]                             axi_dm_awregion,
-    input  logic [3:0]                             axi_dm_awuser,
-    input  logic [3:0]                             axi_dm_awqos,
-    input  logic [5:0]                             axi_dm_awatop,
-    input  logic                                   axi_dm_awvalid,
-    output logic                                   axi_dm_awready,
-    input  logic [63:0]                            axi_dm_wdata,
-    input  logic [7:0]                             axi_dm_wstrb,
-    input  logic                                   axi_dm_wlast,
-    input  logic [3:0]                             axi_dm_wuser,
-    input  logic                                   axi_dm_wvalid,
-    output logic                                   axi_dm_wready,
-    output logic [3:0]                             axi_dm_bid,
-    output logic [1:0]                             axi_dm_bresp,
-    output logic                                   axi_dm_bvalid,
-    output logic [3:0]                             axi_dm_buser,
-    input  logic                                   axi_dm_bready,
-    input  logic [3:0]                             axi_dm_arid,
-    input  logic [63:0]                            axi_dm_araddr,
-    input  logic [7:0]                             axi_dm_arlen,
-    input  logic [2:0]                             axi_dm_arsize,
-    input  logic [1:0]                             axi_dm_arburst,
-    input  logic                                   axi_dm_arlock,
-    input  logic [3:0]                             axi_dm_arcache,
-    input  logic [2:0]                             axi_dm_arprot,
-    input  logic [3:0]                             axi_dm_arregion,
-    input  logic [3:0]                             axi_dm_aruser,
-    input  logic [3:0]                             axi_dm_arqos,
-    input  logic                                   axi_dm_arvalid,
-    output logic                                   axi_dm_arready,
-    output logic [3:0]                             axi_dm_rid,
-    output logic [63:0]                            axi_dm_rdata,
-    output logic [1:0]                             axi_dm_rresp,
-    output logic                                   axi_dm_rlast,
-    output logic [3:0]                             axi_dm_ruser,
-    output logic                                   axi_dm_rvalid,
-    input  logic                                   axi_dm_rready
+    output  logic [3:0]                             axi_dm_awid,
+    output  logic [63:0]                            axi_dm_awaddr,
+    output  logic [7:0]                             axi_dm_awlen,
+    output  logic [2:0]                             axi_dm_awsize,
+    output  logic [1:0]                             axi_dm_awburst,
+    output  logic                                   axi_dm_awlock,
+    output  logic [3:0]                             axi_dm_awcache,
+    output  logic [2:0]                             axi_dm_awprot,
+    output  logic [3:0]                             axi_dm_awregion,
+    output  logic [3:0]                             axi_dm_awuser,
+    output  logic [3:0]                             axi_dm_awqos,
+    output  logic [5:0]                             axi_dm_awatop,
+    output  logic                                   axi_dm_awvalid,
+    input   logic                                   axi_dm_awready,
+    output  logic [63:0]                            axi_dm_wdata,
+    output  logic [7:0]                             axi_dm_wstrb,
+    output  logic                                   axi_dm_wlast,
+    output  logic [3:0]                             axi_dm_wuser,
+    output  logic                                   axi_dm_wvalid,
+    input   logic                                   axi_dm_wready,
+    input   logic [3:0]                             axi_dm_bid,
+    input   logic [1:0]                             axi_dm_bresp,
+    input   logic                                   axi_dm_bvalid,
+    input   logic [3:0]                             axi_dm_buser,
+    output  logic                                   axi_dm_bready,
+    output  logic [3:0]                             axi_dm_arid,
+    output  logic [63:0]                            axi_dm_araddr,
+    output  logic [7:0]                             axi_dm_arlen,
+    output  logic [2:0]                             axi_dm_arsize,
+    output  logic [1:0]                             axi_dm_arburst,
+    output  logic                                   axi_dm_arlock,
+    output  logic [3:0]                             axi_dm_arcache,
+    output  logic [2:0]                             axi_dm_arprot,
+    output  logic [3:0]                             axi_dm_arregion,
+    output  logic [3:0]                             axi_dm_aruser,
+    output  logic [3:0]                             axi_dm_arqos,
+    output  logic                                   axi_dm_arvalid,
+    input   logic                                   axi_dm_arready,
+    input   logic [3:0]                             axi_dm_rid,
+    input   logic [63:0]                            axi_dm_rdata,
+    input   logic [1:0]                             axi_dm_rresp,
+    input   logic                                   axi_dm_rlast,
+    input   logic [3:0]                             axi_dm_ruser,
+    input   logic                                   axi_dm_rvalid,
+    output  logic                                   axi_dm_rready
 );
 
-    /*
-        OUTPUT
-    */
+
     ariane_axi::req_t dm_axi_m_req;
     ariane_axi::aw_chan_t dm_axi_m_req_aw;
     ariane_axi::w_chan_t dm_axi_m_req_w;
     ariane_axi::ar_chan_t dm_axi_m_req_ar;
 
-    assign dm_axi_m_req.aw = dm_axi_m_req_aw;
-    assign dm_axi_m_req.w = dm_axi_m_req_w;
-    assign dm_axi_m_req.ar = dm_axi_m_req_ar;
-    assign dm_axi_m_req.aw_valid = axi_dm_awvalid;
-    assign dm_axi_m_req.w_valid = axi_dm_wvalid;
-    assign dm_axi_m_req.b_ready = axi_dm_bready;
-    assign dm_axi_m_req.ar_valid = axi_dm_arvalid;
-    assign dm_axi_m_req.r_ready = axi_dm_rready;
+    assign dm_axi_m_req_aw = dm_axi_m_req.aw;
+    assign dm_axi_m_req_w = dm_axi_m_req.w;
+    assign dm_axi_m_req_ar = dm_axi_m_req.ar;
+    assign axi_dm_awvalid = dm_axi_m_req.aw_valid;
+    assign axi_dm_wvalid = dm_axi_m_req.w_valid;
+    assign axi_dm_bready = dm_axi_m_req.b_ready;
+    assign axi_dm_arvalid = dm_axi_m_req.ar_valid;
+    assign axi_dm_rready = dm_axi_m_req.r_ready;
 
     // dm_axi_m_req_aw aw_chant_t signals
 
-    assign dm_axi_m_req_aw.id = axi_dm_awid;
-    assign dm_axi_m_req_aw.addr = axi_dm_awaddr;
-    assign dm_axi_m_req_aw.len = axi_dm_awlen;
-    assign dm_axi_m_req_aw.size = axi_dm_awsize;
-    assign dm_axi_m_req_aw.burst = axi_dm_awburst;
-    assign dm_axi_m_req_aw.lock = axi_dm_awlock;
-    assign dm_axi_m_req_aw.cache = axi_dm_awcache;
-    assign dm_axi_m_req_aw.prot = axi_dm_awprot;
-    assign dm_axi_m_req_aw.qos = axi_dm_awqos;
-    assign dm_axi_m_req_aw.region = axi_dm_awregion;
-    assign dm_axi_m_req_aw.atop = axi_dm_awatop;
-    assign dm_axi_m_req_aw.user = axi_dm_awuser;
+    assign axi_dm_awid = dm_axi_m_req_aw.id;
+    assign axi_dm_awaddr = dm_axi_m_req_aw.addr;
+    assign axi_dm_awlen = dm_axi_m_req_aw.len;
+    assign axi_dm_awsize = dm_axi_m_req_aw.size;
+    assign axi_dm_awburst = dm_axi_m_req_aw.burst;
+    assign axi_dm_awlock = dm_axi_m_req_aw.lock;
+    assign axi_dm_awcache = dm_axi_m_req_aw.cache;
+    assign axi_dm_awprot = dm_axi_m_req_aw.prot;
+    assign axi_dm_awqos = dm_axi_m_req_aw.qos;
+    assign axi_dm_awregion = dm_axi_m_req_aw.region;
+    assign axi_dm_awatop = dm_axi_m_req_aw.atop;
+    assign axi_dm_awuser = dm_axi_m_req_aw.user;
 
     // w_chan_t dm_axi_m_req_w
-    assign dm_axi_m_req_w.data = axi_dm_wdata;
-    assign dm_axi_m_req_w.strb = axi_dm_wstrb;
-    assign dm_axi_m_req_w.last = axi_dm_wlast;
-    assign dm_axi_m_req_w.user = axi_dm_wuser;
+    assign axi_dm_wdata = dm_axi_m_req_w.data;
+    assign axi_dm_wstrb = dm_axi_m_req_w.strb;
+    assign axi_dm_wlast = dm_axi_m_req_w.last;
+    assign axi_dm_wuser = dm_axi_m_req_w.user;
 
-    assign dm_axi_m_req_ar.id = axi_dm_arid;
-    assign dm_axi_m_req_ar.addr = axi_dm_araddr;
-    assign dm_axi_m_req_ar.len = axi_dm_arlen;
-    assign dm_axi_m_req_ar.size = axi_dm_arsize;
-    assign dm_axi_m_req_ar.burst = axi_dm_arburst;
-    assign dm_axi_m_req_ar.lock = axi_dm_arlock;
-    assign dm_axi_m_req_ar.cache = axi_dm_arcache;
-    assign dm_axi_m_req_ar.prot = axi_dm_arprot;
-    assign dm_axi_m_req_ar.qos = axi_dm_arqos;
-    assign dm_axi_m_req_ar.region = axi_dm_arregion;
-    assign dm_axi_m_req_ar.user = axi_dm_aruser;
+    assign axi_dm_arid = dm_axi_m_req_ar.id;
+    assign axi_dm_araddr = dm_axi_m_req_ar.addr;
+    assign axi_dm_arlen = dm_axi_m_req_ar.len;
+    assign axi_dm_arsize = dm_axi_m_req_ar.size;
+    assign axi_dm_arburst = dm_axi_m_req_ar.burst;
+    assign axi_dm_arlock = dm_axi_m_req_ar.lock;
+    assign axi_dm_arcache = dm_axi_m_req_ar.cache;
+    assign axi_dm_arprot = dm_axi_m_req_ar.prot;
+    assign axi_dm_arqos = dm_axi_m_req_ar.qos;
+    assign axi_dm_arregion = dm_axi_m_req_ar.region;
+    assign axi_dm_aruser = dm_axi_m_req_ar.user;
 
-    /*
-        INPUT
-    */
     ariane_axi::b_chan_t dm_axi_m_resp_b_chan;
-    assign axi_dm_bid = dm_axi_m_resp_b_chan.id;
-    assign axi_dm_bresp = dm_axi_m_resp_b_chan.resp;
-    assign axi_dm_buser = dm_axi_m_resp_b_chan.user;
+    assign dm_axi_m_resp_b_chan.id = axi_dm_bid;
+    assign dm_axi_m_resp_b_chan.resp = axi_dm_bresp;
+    assign dm_axi_m_resp_b_chan.user = axi_dm_buser;
 
     ariane_axi::r_chan_t dm_axi_m_resp_r_chan;
-    assign axi_dm_rid = dm_axi_m_resp_r_chan.id;
-    assign axi_dm_rdata = dm_axi_m_resp_r_chan.data;
-    assign axi_dm_rresp = dm_axi_m_resp_r_chan.resp;
-    assign axi_dm_rlast = dm_axi_m_resp_r_chan.last;
-    assign axi_dm_ruser = dm_axi_m_resp_r_chan.user;
+    assign dm_axi_m_resp_r_chan.id = axi_dm_rid;
+    assign dm_axi_m_resp_r_chan.data = axi_dm_rdata;
+    assign dm_axi_m_resp_r_chan.resp = axi_dm_rresp;
+    assign dm_axi_m_resp_r_chan.last = axi_dm_rlast;
+    assign dm_axi_m_resp_r_chan.user = axi_dm_ruser;
 
     ariane_axi::resp_t dm_axi_m_resp;
-    assign axi_dm_awready = dm_axi_m_resp.aw_ready;
-    assign axi_dm_arready = dm_axi_m_resp.ar_ready;
-    assign axi_dm_wready = dm_axi_m_resp.w_ready;
-    assign axi_dm_bvalid = dm_axi_m_resp.b_valid;
-    assign dm_axi_m_resp_b_chan = dm_axi_m_resp.b;
-    assign axi_dm_rvalid = dm_axi_m_resp.r_valid;
-    assign dm_axi_m_resp_r_chan = dm_axi_m_resp.r;
+    assign dm_axi_m_resp.aw_ready = axi_dm_awready;
+    assign dm_axi_m_resp.ar_ready = axi_dm_arready;
+    assign dm_axi_m_resp.w_ready = axi_dm_wready;
+    assign dm_axi_m_resp.b_valid = axi_dm_bvalid;
+    assign dm_axi_m_resp.b = dm_axi_m_resp_b_chan;
+    assign dm_axi_m_resp.r_valid = axi_dm_rvalid;
+    assign dm_axi_m_resp.r = dm_axi_m_resp_r_chan;
 
     logic                dm_slave_req;
     logic                dm_slave_we;
