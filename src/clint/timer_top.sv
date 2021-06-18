@@ -10,7 +10,7 @@ module timer_top #(
     output logic [NR_CORES-1:0]          timer_irq_o,  // Timer interrupts
     output logic [NR_CORES-1:0]          ipi_o,        // software interrupt (a.k.a inter-process-interrupt)
 
-    // memory side, AXI Master
+    // memory side, AXI Slave
     input  logic [3:0]                             axi_timer_awid,
     input  logic [63:0]                            axi_timer_awaddr,
     input  logic [7:0]                             axi_timer_awlen,
