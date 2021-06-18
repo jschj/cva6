@@ -213,7 +213,7 @@ module tapasco_dm_top #(
     ariane_axi::resp_t dm_axi_slave_resp;
     axi_slave_connect i_axi_slave_connect_clint (
         .dm_axi_slave_req(dm_axi_slave_req),
-        .dm_axi_slave_resp(axi_clint_resp),
+        .dm_axi_slave_resp(dm_axi_slave_resp),
         .slave(master)
     );
 
