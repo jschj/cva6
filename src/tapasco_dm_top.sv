@@ -1,7 +1,8 @@
 module tapasco_dm_top #(
     parameter int unsigned AXI_ADDR_WIDTH = 64,
     parameter int unsigned AXI_DATA_WIDTH = 64,
-    parameter int unsigned AXI_ID_WIDTH   = 5
+    parameter int unsigned AXI_ID_WIDTH   = 5,
+    parameter int unsigned AXI_MASTER_ID_WIDTH   = AXI_ID_WIDTH - 1
 )(
     input  logic                         clk_i,
     input  logic                         rst_ni,
@@ -14,7 +15,7 @@ module tapasco_dm_top #(
     output  logic [32-1:0]                          dmi_rdata, // DMI read data
 
     // DM Master connection
-    output  logic [AXI_ID_WIDTH-1:0]                             axi_dm_master_awid,
+    output  logic [AXI_MASTER_ID_WIDTH-1:0]                             axi_dm_master_awid,
     output  logic [63:0]                            axi_dm_master_awaddr,
     output  logic [7:0]                             axi_dm_master_awlen,
     output  logic [2:0]                             axi_dm_master_awsize,
@@ -34,12 +35,12 @@ module tapasco_dm_top #(
     output  logic [3:0]                             axi_dm_master_wuser,
     output  logic                                   axi_dm_master_wvalid,
     input   logic                                   axi_dm_master_wready,
-    input   logic [AXI_ID_WIDTH-1:0]                             axi_dm_master_bid,
+    input   logic [AXI_MASTER_ID_WIDTH-1:0]                             axi_dm_master_bid,
     input   logic [1:0]                             axi_dm_master_bresp,
     input   logic                                   axi_dm_master_bvalid,
     input   logic [3:0]                             axi_dm_master_buser,
     output  logic                                   axi_dm_master_bready,
-    output  logic [AXI_ID_WIDTH-1:0]                             axi_dm_master_arid,
+    output  logic [AXI_MASTER_ID_WIDTH-1:0]                             axi_dm_master_arid,
     output  logic [63:0]                            axi_dm_master_araddr,
     output  logic [7:0]                             axi_dm_master_arlen,
     output  logic [2:0]                             axi_dm_master_arsize,
@@ -52,7 +53,7 @@ module tapasco_dm_top #(
     output  logic [3:0]                             axi_dm_master_arqos,
     output  logic                                   axi_dm_master_arvalid,
     input   logic                                   axi_dm_master_arready,
-    input   logic [AXI_ID_WIDTH-1:0]                             axi_dm_master_rid,
+    input   logic [AXI_MASTER_ID_WIDTH-1:0]                             axi_dm_master_rid,
     input   logic [63:0]                            axi_dm_master_rdata,
     input   logic [1:0]                             axi_dm_master_rresp,
     input   logic                                   axi_dm_master_rlast,
@@ -216,7 +217,8 @@ module tapasco_dm_top #(
     );
 
     axi_adapter #(
-        .DATA_WIDTH            ( AXI_DATA_WIDTH            )
+        .DATA_WIDTH            ( AXI_DATA_WIDTH            ),
+        .AXI_ID_WIDTH(AXI_MASTER_ID_WIDTH)
     ) i_dm_axi_master (
         .clk_i                 ( clk_i                     ),
         .rst_ni                ( rst_ni                    ),
@@ -235,8 +237,8 @@ module tapasco_dm_top #(
         .id_o                  (                           ),
         .critical_word_o       (                           ),
         .critical_word_valid_o (                           ),
-        .axi_req_o             ( dm_axi_master_req              ),
-        .axi_resp_i            ( dm_axi_master_resp             )
+        .axi_req_o             ( dm_axi_master_req         ),
+        .axi_resp_i            ( dm_axi_master_resp        )
     );
 
     // Connect master pins
