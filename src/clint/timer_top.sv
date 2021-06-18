@@ -1,7 +1,5 @@
 module timer_top #(
-    parameter int unsigned AXI_ADDR_WIDTH = 64,
-    parameter int unsigned AXI_DATA_WIDTH = 64,
-    parameter int unsigned AXI_ID_WIDTH   = 10,
+    parameter int unsigned AXI_ID_WIDTH   = 5,
     parameter int unsigned NR_CORES       = 1 // Number of cores therefore also the number of timecmp registers and timer interrupts
 )(
     input  logic                         clk_i,
@@ -11,7 +9,7 @@ module timer_top #(
     output logic [NR_CORES-1:0]          ipi_o,        // software interrupt (a.k.a inter-process-interrupt)
 
     // memory side, AXI Slave
-    input  logic [3:0]                             axi_timer_awid,
+    input  logic [AXI_ID_WIDTH-1:0]                             axi_timer_awid,
     input  logic [63:0]                            axi_timer_awaddr,
     input  logic [7:0]                             axi_timer_awlen,
     input  logic [2:0]                             axi_timer_awsize,
@@ -31,12 +29,12 @@ module timer_top #(
     input  logic [3:0]                             axi_timer_wuser,
     input  logic                                   axi_timer_wvalid,
     output logic                                   axi_timer_wready,
-    output logic [3:0]                             axi_timer_bid,
+    output logic [AXI_ID_WIDTH-1:0]                             axi_timer_bid,
     output logic [1:0]                             axi_timer_bresp,
     output logic                                   axi_timer_bvalid,
     output logic [3:0]                             axi_timer_buser,
     input  logic                                   axi_timer_bready,
-    input  logic [3:0]                             axi_timer_arid,
+    input  logic [AXI_ID_WIDTH-1:0]                             axi_timer_arid,
     input  logic [63:0]                            axi_timer_araddr,
     input  logic [7:0]                             axi_timer_arlen,
     input  logic [2:0]                             axi_timer_arsize,
@@ -49,7 +47,7 @@ module timer_top #(
     input  logic [3:0]                             axi_timer_arqos,
     input  logic                                   axi_timer_arvalid,
     output logic                                   axi_timer_arready,
-    output logic [3:0]                             axi_timer_rid,
+    output logic [AXI_ID_WIDTH-1:0]                             axi_timer_rid,
     output logic [63:0]                            axi_timer_rdata,
     output logic [1:0]                             axi_timer_rresp,
     output logic                                   axi_timer_rlast,
