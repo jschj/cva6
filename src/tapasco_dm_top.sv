@@ -1,7 +1,7 @@
 module tapasco_dm_top #(
     parameter int unsigned AXI_ADDR_WIDTH = 64,
     parameter int unsigned AXI_DATA_WIDTH = 64,
-    parameter int unsigned AXI_ID_WIDTH   = 5,
+    parameter int unsigned AXI_ID_WIDTH   = 5
 )(
     input  logic                         clk_i,
     input  logic                         rst_ni,
