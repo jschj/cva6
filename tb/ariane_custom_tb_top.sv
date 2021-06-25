@@ -32,7 +32,6 @@ module ariane_custom_tb_top #(
     input  logic                         ipi_i,        // inter-processor interrupts (async)
     // Timer facilities
     input  logic                         time_irq_i,   // timer interrupt in (async)
-    input  logic                         debug_req_i,  // debug request (async)
 
     // DM Interface
     input   logic                                   dmi_req,                // DMI request
@@ -42,6 +41,9 @@ module ariane_custom_tb_top #(
     output  logic [32-1:0]     dmi_rdata              // DMI read data
 
 );
+
+
+    logic                         debug_req,  // debug request (async)
 
     logic clk_i, rst_ni;
     assign clk_i = clk;
@@ -56,7 +58,7 @@ module ariane_custom_tb_top #(
     localparam logic[63:0] DMEMLength     = 64'h04000;
     //localparam logic[63:0] DRAMLength     = 64'h04000;
 
-    localparam logic[63:0] DebugBase    = 64'h0000_0000;
+    localparam logic[63:0] DebugBase = 64'h1200_0000;
     localparam logic[63:0] ROMBase      = 64'h0000_0000;
     localparam logic[63:0] CLINTBase    = 64'h0200_0000;
     //localparam logic[63:0] DRAMBase     = 64'h0004_0000;
@@ -107,7 +109,7 @@ module ariane_custom_tb_top #(
         .ipi_i(ipi_i),                  // inter-processor interrupts (async)
         // Timer facilities
         .time_irq_i(time_irq_i),        // timer interrupt in (async)
-        .debug_req_i(debug_req_i),      // debug request (async)
+        .debug_req_i(debug_req),      // debug request (async)
 
         // memory side, AXI Master
         .axi_req_o(axi_ariane_req),
@@ -222,7 +224,7 @@ module ariane_custom_tb_top #(
         .testmode_i           ( test_en                     ),
         .ndmreset_o           (), // Removed...
         .dmactive_o           (                             ), // active debug session
-        .debug_req_o          ( debug_req_core_o            ),
+        .debug_req_o          ( debug_req                   ),
         .unavailable_i        ( '0                          ),
         .hartinfo_i           ( {ariane_pkg::DebugHartInfo} ),
         .slave_req_i          ( dm_slave_req                ),
@@ -250,7 +252,7 @@ module ariane_custom_tb_top #(
 
     axi2mem #(
         .AXI_ID_WIDTH   ( IdWidthSlave ),
-        .AXI_ADDR_WIDTH ( AXI_ADDR_WIDTH        ),
+        .AXI_ADDR_WIDTH ( AXI_ADDRESS_WIDTH        ),
         .AXI_DATA_WIDTH ( AXI_DATA_WIDTH           ),
         .AXI_USER_WIDTH ( AXI_USER_WIDTH           )
     ) i_dm_axi2mem (
@@ -269,7 +271,7 @@ module ariane_custom_tb_top #(
     ariane_axi::resp_t dm_axi_master_resp;
     axi_adapter #(
         .DATA_WIDTH            ( AXI_DATA_WIDTH            ),
-        .AXI_ID_WIDTH(AXI_MASTER_ID_WIDTH)
+        .AXI_ID_WIDTH          ( IdWidth)
     ) i_dm_axi_master (
         .clk_i                 ( clk_i                     ),
         .rst_ni                ( rst_ni                    ),
@@ -297,11 +299,6 @@ module ariane_custom_tb_top #(
         .axi_resp_o(dm_axi_master_resp),
         .master(slave[1])
     );
-
-    localparam DebugBase = 64'h1200_0000;
-    localparam DebugLength = 64'h1000;
-    localparam ROMBase = 64'h0000_0000;
-    localparam ROMLength = 64'h04000;
 
     // AXI Interconnect
     axi_node_intf_wrap #(
