@@ -43,7 +43,7 @@ module ariane_custom_tb_top #(
 );
 
 
-    logic                         debug_req,  // debug request (async)
+    logic                         debug_req;  // debug request (async)
 
     logic clk_i, rst_ni;
     assign clk_i = clk;
