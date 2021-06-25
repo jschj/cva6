@@ -62,12 +62,12 @@ module ariane_custom_tb_top #(
     localparam logic[63:0] ROMBase      = 64'h0000_0000;
     localparam logic[63:0] DMEMBase     = 64'h0000_4000;
     //localparam logic[63:0] CLINTBase    = 64'h0200_0000;
-    //localparam logic[63:0] DRAMBase     = 64'h0004_0000;
+    //localparam logic[63:0] DRAMBase     = 64'h8000_0000;
 
     localparam ARIANE_AXI_MASTER_IDX = 0;
     localparam DM_AXI_MASTER_IDX = 1;
-    localparam DM_AXI_SLAVE_IDX = 0;
-    localparam ROM_AXI_SLAVE_IDX = 1;
+    localparam DM_AXI_SLAVE_IDX = 1;
+    localparam ROM_AXI_SLAVE_IDX = 0;
 
 
     localparam ariane_pkg::ariane_cfg_t ArianeCfg = '{
@@ -331,14 +331,14 @@ module ariane_custom_tb_top #(
         .slave        ( slave      ),
         .master       ( master     ),
         .start_addr_i ({
-            ROMBase,
-            DebugBase
+            DebugBase,
+            ROMBase
         }),
         .end_addr_i   ({
-            ROMBase      + ROMLength - 1,
-            DebugBase    + DebugLength - 1
+            DebugBase    + DebugLength - 1,
+            ROMBase      + ROMLength - 1
         }),
-        .valid_rule_i ({{NB_REGION * NB_MASTER}{1'b1}})
+        .valid_rule_i ({(NB_REGION * NB_MASTER){1'b1}})
     );
 
 endmodule
