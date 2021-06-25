@@ -314,7 +314,7 @@ module ariane_custom_tb_top #(
     axi_node_intf_wrap #(
         .NB_SLAVE           ( 2                          ),
         .NB_MASTER          ( 2                          ),
-        .NB_REGION          ( 2                          ),
+        .NB_REGION          ( 1                          ),
         .AXI_ADDR_WIDTH     ( AXI_ADDRESS_WIDTH          ),
         .AXI_DATA_WIDTH     ( AXI_DATA_WIDTH             ),
         .AXI_USER_WIDTH     ( AXI_USER_WIDTH             ),
@@ -335,7 +335,7 @@ module ariane_custom_tb_top #(
             ROMBase      + ROMLength - 1,
             DebugBase    + DebugLength - 1
         }),
-        .valid_rule_i ({{2 * 2}{1'b1}})
+        .valid_rule_i ({{1 * 2}{1'b1}})
     );
 
 endmodule
