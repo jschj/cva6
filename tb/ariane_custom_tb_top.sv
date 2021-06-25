@@ -121,11 +121,10 @@ module ariane_custom_tb_top #(
         .axi_resp_i(axi_ariane_resp)
     );
 
-    localparam IdWidth   = 4;
-    localparam IdWidthSlave   = 5; //TODO
-
     localparam NB_SLAVE = 2;
     localparam NB_MASTER = 2;
+    localparam IdWidth = 4;
+    localparam IdWidthSlave = IdWidth + $clog2(NB_SLAVE);
 
     AXI_BUS #(
         .AXI_ADDR_WIDTH ( AXI_ADDRESS_WIDTH   ),
