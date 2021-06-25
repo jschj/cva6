@@ -212,7 +212,11 @@ module ariane_custom_tb_top #(
     assign dmi_resp_ready = 1'b1;
     dm::dmi_resp_t         dmi_resp;
     //TODO might need flopping to preserve the last valid value
-    assign dmi_rdata = dmi_resp.data;
+    always_ff @(posedge clk_i) begin
+        if (dmi_resp_valid) begin
+           dmi_rdata <= dmi_resp.data;
+        end
+    end
 
     // debug module
     dm_top #(
