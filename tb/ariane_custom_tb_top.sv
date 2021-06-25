@@ -115,18 +115,26 @@ module ariane_custom_tb_top #(
     );
 
     localparam IdWidth   = 4;
+    localparam IdWidthSlave   = 5; //TODO
+
+    AXI_BUS #(
+        .AXI_ADDR_WIDTH ( AXI_ADDRESS_WIDTH   ),
+        .AXI_DATA_WIDTH ( AXI_DATA_WIDTH      ),
+        .AXI_ID_WIDTH   ( IdWidth ),
+        .AXI_USER_WIDTH ( AXI_USER_WIDTH      )
+    ) slave[2-1:0]();
 
     AXI_BUS #(
         .AXI_ADDR_WIDTH ( AXI_ADDRESS_WIDTH        ),
         .AXI_DATA_WIDTH ( AXI_DATA_WIDTH           ),
-        .AXI_ID_WIDTH   ( IdWidth                  ),
+        .AXI_ID_WIDTH   ( IdWidthSlave ),
         .AXI_USER_WIDTH ( AXI_USER_WIDTH           )
-    ) dram_delayed();
+    ) master[2-1:0]();
 
     axi_master_connect i_axi_master_connect_ariane (
         .axi_req_i(axi_ariane_req),
         .axi_resp_o(axi_ariane_resp),
-        .master(dram_delayed)
+        .master(slave[0])
     );
 
     logic                         req;
@@ -137,14 +145,14 @@ module ariane_custom_tb_top #(
     logic [AXI_DATA_WIDTH-1:0]    rdata;
 
     axi2mem #(
-        .AXI_ID_WIDTH   ( IdWidth ),
+        .AXI_ID_WIDTH   ( IdWidthSlave ),
         .AXI_ADDR_WIDTH ( AXI_ADDRESS_WIDTH        ),
         .AXI_DATA_WIDTH ( AXI_DATA_WIDTH           ),
         .AXI_USER_WIDTH ( AXI_USER_WIDTH           )
     ) i_axi2mem (
         .clk_i  ( clk_i        ),
         .rst_ni ( rst_ni   ),
-        .slave  ( dram_delayed ),
+        .slave  ( master[1] ),
         .req_o  ( req          ),
         .we_o   ( we           ),
         .addr_o ( addr         ),
@@ -165,6 +173,162 @@ module ariane_custom_tb_top #(
         .wdata_i    ( wdata                                                                       ),
         .be_i       ( be                                                                          ),
         .rdata_o    ( rdata                                                                       )
+    );
+
+    // DM axi stuff    
+    logic                dm_slave_req;
+    logic                dm_slave_we;
+    logic [64-1:0]       dm_slave_addr;
+    logic [64/8-1:0]     dm_slave_be;
+    logic [64-1:0]       dm_slave_wdata;
+    logic [64-1:0]       dm_slave_rdata;
+
+    logic                dm_master_req;
+    logic [64-1:0]       dm_master_add;
+    logic                dm_master_we;
+    logic [64-1:0]       dm_master_wdata;
+    logic [64/8-1:0]     dm_master_be;
+    logic                dm_master_gnt;
+    logic                dm_master_r_valid;
+    logic [64-1:0]       dm_master_r_rdata;
+
+    // Shady exposed DM interface
+    logic                test_en;
+    assign test_en = 1'b0;
+
+    logic                  dmi_req_valid;
+    logic                  dmi_req_ready;
+    dm::dmi_req_t          dmi_req_i;
+    // TODO this might trigger to often... add edge detection for triggering a single request?
+    assign dmi_req_valid = dmi_req;
+    assign dmi_req_i.op = dmi_req ? (dmi_wr ? dm::DTM_WRITE : dm::DTM_READ) : dm::DTM_NOP;
+    assign dmi_req_i.addr = dmi_addr;
+    assign dmi_req_i.data = dmi_wdata;
+
+    logic                  dmi_resp_valid;
+    logic                  dmi_resp_ready;
+    dm::dmi_resp_t         dmi_resp;
+    //TODO might need flopping to preserve the last valid value
+    assign dmi_rdata = dmi_resp.data;
+
+    // debug module
+    dm_top #(
+        .NrHarts              ( 1                           ),
+        .BusWidth             ( AXI_DATA_WIDTH              ),
+        .SelectableHarts      ( 1'b1                        )
+    ) i_dm_top (
+        .clk_i                ( clk_i                       ),
+        .rst_ni               ( rst_ni                      ), // PoR
+        .testmode_i           ( test_en                     ),
+        .ndmreset_o           (), // Removed...
+        .dmactive_o           (                             ), // active debug session
+        .debug_req_o          ( debug_req_core_o            ),
+        .unavailable_i        ( '0                          ),
+        .hartinfo_i           ( {ariane_pkg::DebugHartInfo} ),
+        .slave_req_i          ( dm_slave_req                ),
+        .slave_we_i           ( dm_slave_we                 ),
+        .slave_addr_i         ( dm_slave_addr               ),
+        .slave_be_i           ( dm_slave_be                 ),
+        .slave_wdata_i        ( dm_slave_wdata              ),
+        .slave_rdata_o        ( dm_slave_rdata              ),
+        .master_req_o         ( dm_master_req               ),
+        .master_add_o         ( dm_master_add               ),
+        .master_we_o          ( dm_master_we                ),
+        .master_wdata_o       ( dm_master_wdata             ),
+        .master_be_o          ( dm_master_be                ),
+        .master_gnt_i         ( dm_master_gnt               ),
+        .master_r_valid_i     ( dm_master_r_valid           ),
+        .master_r_rdata_i     ( dm_master_r_rdata           ),
+        .dmi_rst_ni           ( rst_ni                      ),
+        .dmi_req_valid_i      ( dmi_req_valid               ),
+        .dmi_req_ready_o      ( dmi_req_ready               ),
+        .dmi_req_i            ( dmi_req_i                   ),
+        .dmi_resp_valid_o     ( dmi_resp_valid              ),
+        .dmi_resp_ready_i     ( dmi_resp_ready              ),
+        .dmi_resp_o           ( dmi_resp                    )
+    );
+
+    axi2mem #(
+        .AXI_ID_WIDTH   ( IdWidthSlave ),
+        .AXI_ADDR_WIDTH ( AXI_ADDR_WIDTH        ),
+        .AXI_DATA_WIDTH ( AXI_DATA_WIDTH           ),
+        .AXI_USER_WIDTH ( AXI_USER_WIDTH           )
+    ) i_dm_axi2mem (
+        .clk_i      ( clk_i                     ),
+        .rst_ni     ( rst_ni                    ),
+        .slave      ( master[0] ),
+        .req_o      ( dm_slave_req              ),
+        .we_o       ( dm_slave_we               ),
+        .addr_o     ( dm_slave_addr             ),
+        .be_o       ( dm_slave_be               ),
+        .data_o     ( dm_slave_wdata            ),
+        .data_i     ( dm_slave_rdata            )
+    );
+
+    ariane_axi::req_t dm_axi_master_req;
+    ariane_axi::resp_t dm_axi_master_resp;
+    axi_adapter #(
+        .DATA_WIDTH            ( AXI_DATA_WIDTH            ),
+        .AXI_ID_WIDTH(AXI_MASTER_ID_WIDTH)
+    ) i_dm_axi_master (
+        .clk_i                 ( clk_i                     ),
+        .rst_ni                ( rst_ni                    ),
+        .req_i                 ( dm_master_req             ),
+        .type_i                ( ariane_axi::SINGLE_REQ    ),
+        .gnt_o                 ( dm_master_gnt             ),
+        .gnt_id_o              (                           ),
+        .addr_i                ( dm_master_add             ),
+        .we_i                  ( dm_master_we              ),
+        .wdata_i               ( dm_master_wdata           ),
+        .be_i                  ( dm_master_be              ),
+        .size_i                ( 2'b11                     ), // always do 64bit here and use byte enables to gate
+        .id_i                  ( '0                        ),
+        .valid_o               ( dm_master_r_valid         ),
+        .rdata_o               ( dm_master_r_rdata         ),
+        .id_o                  (                           ),
+        .critical_word_o       (                           ),
+        .critical_word_valid_o (                           ),
+        .axi_req_o             ( dm_axi_master_req         ),
+        .axi_resp_i            ( dm_axi_master_resp        )
+    );
+
+    axi_master_connect i_dm_axi_master_connect (
+        .axi_req_i(dm_axi_master_req),
+        .axi_resp_o(dm_axi_master_resp),
+        .master(slave[1])
+    );
+
+    localparam DebugBase = 64'h1200_0000;
+    localparam DebugLength = 64'h1000;
+    localparam ROMBase = 64'h0000_0000;
+    localparam ROMLength = 64'h04000;
+
+    // AXI Interconnect
+    axi_node_intf_wrap #(
+        .NB_SLAVE           ( 2                          ),
+        .NB_MASTER          ( 2                          ),
+        .NB_REGION          ( 2                          ),
+        .AXI_ADDR_WIDTH     ( AXI_ADDRESS_WIDTH          ),
+        .AXI_DATA_WIDTH     ( AXI_DATA_WIDTH             ),
+        .AXI_USER_WIDTH     ( AXI_USER_WIDTH             ),
+        .AXI_ID_WIDTH       ( IdWidth                    )
+        // .MASTER_SLICE_DEPTH ( 0                          ),
+        // .SLAVE_SLICE_DEPTH  ( 0                          )
+    ) i_axi_xbar (
+        .clk          ( clk_i      ),
+        .rst_n        ( rst_n ),
+        .test_en_i    ( test_en    ),
+        .slave        ( slave      ),
+        .master       ( master     ),
+        .start_addr_i ({
+            DebugBase,
+            ROMBase
+        }),
+        .end_addr_i   ({
+            DebugBase    + DebugLength - 1,
+            ROMBase      + ROMLength - 1
+        }),
+        .valid_rule_i ({{2 * 2}{1'b1}})
     );
 
 endmodule
