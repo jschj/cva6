@@ -124,19 +124,22 @@ module ariane_custom_tb_top #(
     localparam IdWidth   = 4;
     localparam IdWidthSlave   = 5; //TODO
 
+    localparam NB_SLAVE = 2;
+    localparam NB_MASTER = 2;
+
     AXI_BUS #(
         .AXI_ADDR_WIDTH ( AXI_ADDRESS_WIDTH   ),
         .AXI_DATA_WIDTH ( AXI_DATA_WIDTH      ),
         .AXI_ID_WIDTH   ( IdWidth ),
         .AXI_USER_WIDTH ( AXI_USER_WIDTH      )
-    ) slave[2-1:0]();
+    ) slave[NB_SLAVE-1:0]();
 
     AXI_BUS #(
         .AXI_ADDR_WIDTH ( AXI_ADDRESS_WIDTH        ),
         .AXI_DATA_WIDTH ( AXI_DATA_WIDTH           ),
         .AXI_ID_WIDTH   ( IdWidthSlave ),
         .AXI_USER_WIDTH ( AXI_USER_WIDTH           )
-    ) master[2-1:0]();
+    ) master[NB_MASTER-1:0]();
 
     axi_master_connect i_axi_master_connect_ariane (
         .axi_req_i(axi_ariane_req),
@@ -311,10 +314,11 @@ module ariane_custom_tb_top #(
     );
 
     // AXI Interconnect
+    localparam NB_REGION = 1;
     axi_node_intf_wrap #(
-        .NB_SLAVE           ( 2                          ),
-        .NB_MASTER          ( 2                          ),
-        .NB_REGION          ( 1                          ),
+        .NB_SLAVE           ( NB_SLAVE                   ),
+        .NB_MASTER          ( NB_MASTER                  ),
+        .NB_REGION          ( NB_REGION                  ),
         .AXI_ADDR_WIDTH     ( AXI_ADDRESS_WIDTH          ),
         .AXI_DATA_WIDTH     ( AXI_DATA_WIDTH             ),
         .AXI_USER_WIDTH     ( AXI_USER_WIDTH             ),
@@ -335,7 +339,7 @@ module ariane_custom_tb_top #(
             ROMBase      + ROMLength - 1,
             DebugBase    + DebugLength - 1
         }),
-        .valid_rule_i ({{1 * 2}{1'b1}})
+        .valid_rule_i ({{NB_REGION * NB_MASTER}{1'b1}})
     );
 
 endmodule
