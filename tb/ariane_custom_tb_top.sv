@@ -54,15 +54,20 @@ module ariane_custom_tb_top #(
 
     localparam logic[63:0] DebugLength    = 64'h1000;
     localparam logic[63:0] ROMLength      = 64'h04000;
-    localparam logic[63:0] CLINTLength    = 64'hC0000;
     localparam logic[63:0] DMEMLength     = 64'h04000;
+    //localparam logic[63:0] CLINTLength    = 64'hC0000;
     //localparam logic[63:0] DRAMLength     = 64'h04000;
 
     localparam logic[63:0] DebugBase = 64'h1200_0000;
     localparam logic[63:0] ROMBase      = 64'h0000_0000;
-    localparam logic[63:0] CLINTBase    = 64'h0200_0000;
+    localparam logic[63:0] DMEMBase     = 64'h0000_4000;
+    //localparam logic[63:0] CLINTBase    = 64'h0200_0000;
     //localparam logic[63:0] DRAMBase     = 64'h0004_0000;
-    localparam logic[63:0] DMEMBase     = 64'h0004_0000;
+
+    localparam ARIANE_AXI_MASTER_IDX = 0;
+    localparam DM_AXI_MASTER_IDX = 1;
+    localparam DM_AXI_SLAVE_IDX = 0;
+    localparam ROM_AXI_SLAVE_IDX = 1;
 
 
     localparam ariane_pkg::ariane_cfg_t ArianeCfg = '{
@@ -136,7 +141,7 @@ module ariane_custom_tb_top #(
     axi_master_connect i_axi_master_connect_ariane (
         .axi_req_i(axi_ariane_req),
         .axi_resp_o(axi_ariane_resp),
-        .master(slave[0])
+        .master(slave[ARIANE_AXI_MASTER_IDX])
     );
 
     logic                         req;
@@ -154,7 +159,7 @@ module ariane_custom_tb_top #(
     ) i_axi2mem (
         .clk_i  ( clk_i        ),
         .rst_ni ( rst_ni   ),
-        .slave  ( master[1] ),
+        .slave  ( master[ROM_AXI_SLAVE_IDX] ),
         .req_o  ( req          ),
         .we_o   ( we           ),
         .addr_o ( addr         ),
@@ -263,7 +268,7 @@ module ariane_custom_tb_top #(
     ) i_dm_axi2mem (
         .clk_i      ( clk_i                     ),
         .rst_ni     ( rst_ni                    ),
-        .slave      ( master[0] ),
+        .slave      ( master[DM_AXI_SLAVE_IDX] ),
         .req_o      ( dm_slave_req              ),
         .we_o       ( dm_slave_we               ),
         .addr_o     ( dm_slave_addr             ),
@@ -302,7 +307,7 @@ module ariane_custom_tb_top #(
     axi_master_connect i_dm_axi_master_connect (
         .axi_req_i(dm_axi_master_req),
         .axi_resp_o(dm_axi_master_resp),
-        .master(slave[1])
+        .master(slave[DM_AXI_MASTER_IDX])
     );
 
     // AXI Interconnect
