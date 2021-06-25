@@ -323,12 +323,12 @@ module ariane_custom_tb_top #(
         .slave        ( slave      ),
         .master       ( master     ),
         .start_addr_i ({
-            DebugBase,
-            ROMBase
+            ROMBase,
+            DebugBase
         }),
         .end_addr_i   ({
-            DebugBase    + DebugLength - 1,
-            ROMBase      + ROMLength - 1
+            ROMBase      + ROMLength - 1,
+            DebugBase    + DebugLength - 1
         }),
         .valid_rule_i ({{2 * 2}{1'b1}})
     );
