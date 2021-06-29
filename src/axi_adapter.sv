@@ -81,7 +81,7 @@ module axi_adapter #(
     axi_req_o.ar_valid  = 1'b0;
     // in case of a single request or wrapping transfer we can simply begin at the address, if we want to request a cache-line
     // with an incremental transfer we need to output the corresponding base address of the cache line
-    axi_req_o.ar.addr   = (CRITICAL_WORD_FIRST || type_i == ariane_axi::SINGLE_REQ) ? addr_i : { addr_i[63:CACHELINE_BYTE_OFFSET], {{CACHELINE_BYTE_OFFSET}{1'b0}}};
+    axi_req_o.ar.addr   = (CRITICAL_WORD_FIRST || type_i == ariane_axi::SINGLE_REQ) ? addr_i : { addr_i[63:CACHELINE_BYTE_OFFSET], {CACHELINE_BYTE_OFFSET{1'b0}}};
     axi_req_o.ar.prot   = 3'b0;
     axi_req_o.ar.region = 4'b0;
     axi_req_o.ar.len    = 8'b0;
