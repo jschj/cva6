@@ -144,6 +144,7 @@ module tapasco_dm_top #(
 
     logic                  dmi_resp_valid;
     logic                  dmi_resp_ready;
+    assign dmi_resp_ready = 1'b1;
     dm::dmi_resp_t         dmi_resp;
     //TODO might need flopping to preserve the last valid value
     assign dmi_rdata = dmi_resp.data;
