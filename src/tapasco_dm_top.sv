@@ -212,10 +212,10 @@ module tapasco_dm_top #(
 
     ariane_axi::req_t dm_axi_slave_req;
     ariane_axi::resp_t dm_axi_slave_resp;
-    axi_slave_connect i_axi_slave_connect_dm (
-        .axi_req_o(dm_axi_slave_req),
-        .axi_resp_i(dm_axi_slave_resp),
-        .slave(master)
+    axi_master_connect i_axi_master_connect_dm (
+        .axi_req_i(dm_axi_slave_req),
+        .axi_resp_o(dm_axi_slave_resp),
+        .master(master)
     );
 
     axi_adapter #(
