@@ -136,8 +136,15 @@ module tapasco_dm_top #(
     logic                  dmi_req_valid;
     logic                  dmi_req_ready;
     dm::dmi_req_t          dmi_req_i;
-    // TODO this might trigger to often... add edge detection for triggering a single request?
-    assign dmi_req_valid = dmi_req;
+    // As this might trigger to often, use add edge detection to trigger a single request
+    logic prev_dmi_req;
+    always_ff @(posedge clk_i) begin
+        prev_dmi_req <= dmi_req;
+    end
+    // Only issue a request on the posedge of dmi_req
+    assign dmi_req_valid = ~prev_dmi_req && dmi_req;
+    //assign dmi_req_valid = dmi_req;
+
     assign dmi_req_i.op = dmi_req ? (dmi_wr ? dm::DTM_WRITE : dm::DTM_READ) : dm::DTM_NOP;
     assign dmi_req_i.addr = dmi_addr;
     assign dmi_req_i.data = dmi_wdata;
@@ -146,8 +153,12 @@ module tapasco_dm_top #(
     logic                  dmi_resp_ready;
     assign dmi_resp_ready = 1'b1;
     dm::dmi_resp_t         dmi_resp;
-    //TODO might need flopping to preserve the last valid value
-    assign dmi_rdata = dmi_resp.data;
+    // use flopping to preserve the last valid value
+    always_ff @(posedge clk_i) begin
+        if (dmi_resp_valid) begin
+           dmi_rdata <= dmi_resp.data;
+        end
+    end
 
     // debug module
     dm_top #(
