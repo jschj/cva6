@@ -156,8 +156,8 @@ module timer_top #(
         .testmode_i(testmode_i),
 
         // memory side, AXI Master
-        .axi_req_i(axi_req_i),
-        .axi_resp_o(axi_resp_o)
+        .axi_req_i(axi_req_o),
+        .axi_resp_o(axi_resp_i)
     );
 
 endmodule
