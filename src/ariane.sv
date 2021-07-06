@@ -762,6 +762,7 @@ module ariane import ariane_pkg::*; #(
   );
 `endif // PITON_ARIANE
 
+`ifndef TAPASCO_DISABLE_FOR_VIVADO
 `ifndef VERILATOR
   instr_tracer_if tracer_if (clk_i);
   // assign instruction tracer interface
@@ -893,5 +894,6 @@ module ariane import ariane_pkg::*; #(
   end
 `endif // VERILATOR
 //pragma translate_on
+`endif
 
 endmodule // ariane
