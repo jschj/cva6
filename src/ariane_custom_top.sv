@@ -46,7 +46,7 @@ module ariane_custom_top #(
     output  logic [32-1:0]     dmi_rdata,              // DMI read data
 
     // memory side, AXI Master
-    output  logic [IdWidthSlave-1:0]                io_axi_mem_awid,
+    output  logic [5-1:0]                           io_axi_mem_awid,
     output  logic [63:0]                            io_axi_mem_awaddr,
     output  logic [7:0]                             io_axi_mem_awlen,
     output  logic [2:0]                             io_axi_mem_awsize,
@@ -66,12 +66,12 @@ module ariane_custom_top #(
     output  logic [3:0]                             io_axi_mem_wuser,
     output  logic                                   io_axi_mem_wvalid,
     input   logic                                   io_axi_mem_wready,
-    input   logic [IdWidthSlave-1:0]                io_axi_mem_bid,
+    input   logic [5-1:0]                           io_axi_mem_bid,
     input   logic [1:0]                             io_axi_mem_bresp,
     input   logic                                   io_axi_mem_bvalid,
     input   logic [3:0]                             io_axi_mem_buser,
     output  logic                                   io_axi_mem_bready,
-    output  logic [IdWidthSlave-1:0]                io_axi_mem_arid,
+    output  logic [5-1:0]                           io_axi_mem_arid,
     output  logic [63:0]                            io_axi_mem_araddr,
     output  logic [7:0]                             io_axi_mem_arlen,
     output  logic [2:0]                             io_axi_mem_arsize,
@@ -84,7 +84,7 @@ module ariane_custom_top #(
     output  logic [3:0]                             io_axi_mem_arqos,
     output  logic                                   io_axi_mem_arvalid,
     input   logic                                   io_axi_mem_arready,
-    input   logic [IdWidthSlave-1:0]                io_axi_mem_rid,
+    input   logic [5-1:0]                           io_axi_mem_rid,
     input   logic [63:0]                            io_axi_mem_rdata,
     input   logic [1:0]                             io_axi_mem_rresp,
     input   logic                                   io_axi_mem_rlast,
