@@ -44,51 +44,51 @@ module ariane_custom_tb_top2 #(
 
 );
 
-    logic [IdWidthSlave-1:0]                io_axi_mem_awid,
-    logic [63:0]                            io_axi_mem_awaddr,
-    logic [7:0]                             io_axi_mem_awlen,
-    logic [2:0]                             io_axi_mem_awsize,
-    logic [1:0]                             io_axi_mem_awburst,
-    logic                                   io_axi_mem_awlock,
-    logic [3:0]                             io_axi_mem_awcache,
-    logic [2:0]                             io_axi_mem_awprot,
-    logic [3:0]                             io_axi_mem_awregion,
-    logic [3:0]                             io_axi_mem_awuser,
-    logic [3:0]                             io_axi_mem_awqos,
-    logic [5:0]                             io_axi_mem_awatop,
-    logic                                   io_axi_mem_awvalid,
-    logic                                   io_axi_mem_awready,
-    logic [63:0]                            io_axi_mem_wdata,
-    logic [7:0]                             io_axi_mem_wstrb,
-    logic                                   io_axi_mem_wlast,
-    logic [3:0]                             io_axi_mem_wuser,
-    logic                                   io_axi_mem_wvalid,
-    logic                                   io_axi_mem_wready,
-    logic [IdWidthSlave-1:0]                io_axi_mem_bid,
-    logic [1:0]                             io_axi_mem_bresp,
-    logic                                   io_axi_mem_bvalid,
-    logic [3:0]                             io_axi_mem_buser,
-    logic                                   io_axi_mem_bready,
-    logic [IdWidthSlave-1:0]                io_axi_mem_arid,
-    logic [63:0]                            io_axi_mem_araddr,
-    logic [7:0]                             io_axi_mem_arlen,
-    logic [2:0]                             io_axi_mem_arsize,
-    logic [1:0]                             io_axi_mem_arburst,
-    logic                                   io_axi_mem_arlock,
-    logic [3:0]                             io_axi_mem_arcache,
-    logic [2:0]                             io_axi_mem_arprot,
-    logic [3:0]                             io_axi_mem_arregion,
-    logic [3:0]                             io_axi_mem_aruser,
-    logic [3:0]                             io_axi_mem_arqos,
-    logic                                   io_axi_mem_arvalid,
-    logic                                   io_axi_mem_arready,
-    logic [IdWidthSlave-1:0]                io_axi_mem_rid,
-    logic [63:0]                            io_axi_mem_rdata,
-    logic [1:0]                             io_axi_mem_rresp,
-    logic                                   io_axi_mem_rlast,
-    logic [3:0]                             io_axi_mem_ruser,
-    logic                                   io_axi_mem_rvalid,
-    logic                                   io_axi_mem_rready
+    logic [IdWidthSlave-1:0]                io_axi_mem_awid;
+    logic [63:0]                            io_axi_mem_awaddr;
+    logic [7:0]                             io_axi_mem_awlen;
+    logic [2:0]                             io_axi_mem_awsize;
+    logic [1:0]                             io_axi_mem_awburst;
+    logic                                   io_axi_mem_awlock;
+    logic [3:0]                             io_axi_mem_awcache;
+    logic [2:0]                             io_axi_mem_awprot;
+    logic [3:0]                             io_axi_mem_awregion;
+    logic [3:0]                             io_axi_mem_awuser;
+    logic [3:0]                             io_axi_mem_awqos;
+    logic [5:0]                             io_axi_mem_awatop;
+    logic                                   io_axi_mem_awvalid;
+    logic                                   io_axi_mem_awready;
+    logic [63:0]                            io_axi_mem_wdata;
+    logic [7:0]                             io_axi_mem_wstrb;
+    logic                                   io_axi_mem_wlast;
+    logic [3:0]                             io_axi_mem_wuser;
+    logic                                   io_axi_mem_wvalid;
+    logic                                   io_axi_mem_wready;
+    logic [IdWidthSlave-1:0]                io_axi_mem_bid;
+    logic [1:0]                             io_axi_mem_bresp;
+    logic                                   io_axi_mem_bvalid;
+    logic [3:0]                             io_axi_mem_buser;
+    logic                                   io_axi_mem_bready;
+    logic [IdWidthSlave-1:0]                io_axi_mem_arid;
+    logic [63:0]                            io_axi_mem_araddr;
+    logic [7:0]                             io_axi_mem_arlen;
+    logic [2:0]                             io_axi_mem_arsize;
+    logic [1:0]                             io_axi_mem_arburst;
+    logic                                   io_axi_mem_arlock;
+    logic [3:0]                             io_axi_mem_arcache;
+    logic [2:0]                             io_axi_mem_arprot;
+    logic [3:0]                             io_axi_mem_arregion;
+    logic [3:0]                             io_axi_mem_aruser;
+    logic [3:0]                             io_axi_mem_arqos;
+    logic                                   io_axi_mem_arvalid;
+    logic                                   io_axi_mem_arready;
+    logic [IdWidthSlave-1:0]                io_axi_mem_rid;
+    logic [63:0]                            io_axi_mem_rdata;
+    logic [1:0]                             io_axi_mem_rresp;
+    logic                                   io_axi_mem_rlast;
+    logic [3:0]                             io_axi_mem_ruser;
+    logic                                   io_axi_mem_rvalid;
+    logic                                   io_axi_mem_rready;
 
     ariane_custom_top core_wrapper_top (
         .clk(clk),
