@@ -893,7 +893,7 @@ module ariane import ariane_pkg::*; #(
     $fclose(f);
   end
 `endif // VERILATOR
-//pragma translate_on
 `endif
+//pragma translate_on
 
 endmodule // ariane
