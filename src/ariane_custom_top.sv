@@ -20,10 +20,7 @@ module ariane_custom_top #(
     parameter logic[63:0] MemBase        = 64'h0000_1000,
     parameter int unsigned AXI_USER_WIDTH    = 1,
     parameter int unsigned AXI_ADDRESS_WIDTH = 64,
-    parameter int unsigned AXI_DATA_WIDTH    = 64,
-    parameter int unsigned NUM_WORDS         = 32768,         // memory size
-    parameter bit          StallRandomOutput = 1'b0,
-    parameter bit          StallRandomInput  = 1'b0
+    parameter int unsigned AXI_DATA_WIDTH    = 64
 ) (
     input  logic                         clk,
     input  logic                         rst_n,
