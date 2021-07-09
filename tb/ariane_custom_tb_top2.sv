@@ -160,7 +160,7 @@ module ariane_custom_tb_top2 #(
     logic [AXI_DATA_WIDTH-1:0]    rdata;
 
     AXI_BUS #(
-        .AXI_ADDR_WIDTH ( AXI_ADDR_WIDTH        ),
+        .AXI_ADDR_WIDTH ( AXI_ADDRESS_WIDTH        ),
         .AXI_DATA_WIDTH ( AXI_DATA_WIDTH           ),
         .AXI_ID_WIDTH   ( IdWidthSlave ),
         .AXI_USER_WIDTH ( AXI_USER_WIDTH           )
