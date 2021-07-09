@@ -49,8 +49,8 @@ module ariane_custom_tb_top #(
     assign clk_i = clk;
     assign rst_ni = rst_n;
 
-    ariane_axi_soc::req_t    axi_ariane_req;
-    ariane_axi_soc::resp_t   axi_ariane_resp;
+    ariane_axi::req_t    axi_ariane_req;
+    ariane_axi::resp_t   axi_ariane_resp;
 
     localparam logic[63:0] DebugLength    = 64'h1000;
     localparam logic[63:0] ROMLength      = 64'h04000;

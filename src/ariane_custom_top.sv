@@ -100,8 +100,8 @@ module ariane_custom_top #(
     assign clk_i = clk;
     assign rst_ni = rst_n;
 
-    ariane_axi_soc::req_t    axi_ariane_req;
-    ariane_axi_soc::resp_t   axi_ariane_resp;
+    ariane_axi::req_t    axi_ariane_req;
+    ariane_axi::resp_t   axi_ariane_resp;
 
     //localparam logic[63:0] CLINTBase    = 64'h0200_0000;
     //localparam logic[63:0] DRAMBase     = 64'h8000_0000;
