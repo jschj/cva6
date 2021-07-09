@@ -172,8 +172,8 @@ module ariane_custom_tb_top2 #(
         .AXI_DATA_WIDTH ( AXI_DATA_WIDTH           ),
         .AXI_USER_WIDTH ( AXI_USER_WIDTH           )
     ) i_axi2mem (
-        .clk_i  ( clk_i        ),
-        .rst_ni ( rst_ni   ),
+        .clk_i  ( clk        ),
+        .rst_ni ( rst_n   ),
         .slave  ( master ),
         .req_o  ( req          ),
         .we_o   ( we           ),
@@ -187,8 +187,8 @@ module ariane_custom_tb_top2 #(
         .DATA_WIDTH ( AXI_DATA_WIDTH ),
         .NUM_WORDS  ( NUM_WORDS      )
     ) i_sram (
-        .clk_i      ( clk_i                                                                       ),
-        .rst_ni     ( rst_ni                                                                      ),
+        .clk_i      ( clk                                                                       ),
+        .rst_ni     ( rst_n                                                                      ),
         .req_i      ( req                                                                         ),
         .we_i       ( we                                                                          ),
         .addr_i     ( addr[$clog2(NUM_WORDS)-1+$clog2(AXI_DATA_WIDTH/8):$clog2(AXI_DATA_WIDTH/8)] ),
