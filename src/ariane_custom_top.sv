@@ -100,16 +100,27 @@ module ariane_custom_top #(
     assign clk_i = clk;
     assign rst_ni = rst_n;
 
-    ariane_axi::req_t    axi_ariane_req;
-    ariane_axi::resp_t   axi_ariane_resp;
-
     //localparam logic[63:0] CLINTBase    = 64'h0200_0000;
     //localparam logic[63:0] DRAMBase     = 64'h8000_0000;
 
     localparam ARIANE_AXI_MASTER_IDX = 0;
     localparam DM_AXI_MASTER_IDX = 1;
-    localparam DM_AXI_SLAVE_IDX = 1;
-    localparam ROM_AXI_SLAVE_IDX = 0;
+    localparam DM_AXI_SLAVE_IDX = 0;
+    localparam ROM_AXI_SLAVE_IDX = 1;
+
+    AXI_BUS #(
+        .AXI_ADDR_WIDTH ( AXI_ADDRESS_WIDTH   ),
+        .AXI_DATA_WIDTH ( AXI_DATA_WIDTH      ),
+        .AXI_ID_WIDTH   ( IdWidth ),
+        .AXI_USER_WIDTH ( AXI_USER_WIDTH      )
+    ) slave[NB_SLAVE-1:0]();
+
+    AXI_BUS #(
+        .AXI_ADDR_WIDTH ( AXI_ADDRESS_WIDTH        ),
+        .AXI_DATA_WIDTH ( AXI_DATA_WIDTH           ),
+        .AXI_ID_WIDTH   ( IdWidthSlave ),
+        .AXI_USER_WIDTH ( AXI_USER_WIDTH           )
+    ) master[NB_MASTER-1:0]();
 
     localparam ariane_pkg::ariane_cfg_t ArianeCfg = '{
         RASDepth: 2,
@@ -139,6 +150,8 @@ module ariane_custom_top #(
         NrPMPEntries:           8
     };
 
+    ariane_axi::req_t    axi_ariane_req;
+    ariane_axi::resp_t   axi_ariane_resp;
 
     ariane#(
         .ArianeCfg(ArianeCfg)
@@ -160,24 +173,10 @@ module ariane_custom_top #(
         .axi_resp_i(axi_ariane_resp)
     );
 
-    AXI_BUS #(
-        .AXI_ADDR_WIDTH ( AXI_ADDRESS_WIDTH   ),
-        .AXI_DATA_WIDTH ( AXI_DATA_WIDTH      ),
-        .AXI_ID_WIDTH   ( IdWidth ),
-        .AXI_USER_WIDTH ( AXI_USER_WIDTH      )
-    ) slave[NB_SLAVE-1:0]();
-
-    AXI_BUS #(
-        .AXI_ADDR_WIDTH ( AXI_ADDRESS_WIDTH        ),
-        .AXI_DATA_WIDTH ( AXI_DATA_WIDTH           ),
-        .AXI_ID_WIDTH   ( IdWidthSlave ),
-        .AXI_USER_WIDTH ( AXI_USER_WIDTH           )
-    ) master[NB_MASTER-1:0]();
-
     axi_master_connect i_axi_master_connect_ariane (
         .axi_req_i(axi_ariane_req),
         .axi_resp_o(axi_ariane_resp),
-        .master(slave[ARIANE_AXI_MASTER_IDX])
+        .master(slave[ARIANE_AXI_MASTER_IDX].Master)
     );
 
     // DM axi stuff    
@@ -274,7 +273,7 @@ module ariane_custom_top #(
     ) i_dm_axi2mem (
         .clk_i      ( clk_i                     ),
         .rst_ni     ( rst_ni                    ),
-        .slave      ( master[DM_AXI_SLAVE_IDX] ),
+        .slave      ( master[DM_AXI_SLAVE_IDX].Slave ),
         .req_o      ( dm_slave_req              ),
         .we_o       ( dm_slave_we               ),
         .addr_o     ( dm_slave_addr             ),
@@ -313,7 +312,7 @@ module ariane_custom_top #(
     axi_master_connect i_dm_axi_master_connect (
         .axi_req_i(dm_axi_master_req),
         .axi_resp_o(dm_axi_master_resp),
-        .master(slave[DM_AXI_MASTER_IDX])
+        .master(slave[DM_AXI_MASTER_IDX].Master)
     );
 
     // AXI Interconnect
@@ -335,95 +334,66 @@ module ariane_custom_top #(
         .slave        ( slave      ),
         .master       ( master     ),
         .start_addr_i ({
-            DebugBase,
-            MemBase
+            MemBase,
+            DebugBase
         }),
         .end_addr_i   ({
-            DebugBase    + DebugLength - 1,
-            MemBase      + MemLength - 1
+            MemBase      + MemLength - 1,
+            DebugBase    + DebugLength - 1
         }),
         .valid_rule_i ({(NB_REGION * NB_MASTER){1'b1}})
     );
 
-
-
     // Connect master 
+    raw_axi_master_connect axiMemConnector (
+        .slave(master[ROM_AXI_SLAVE_IDX].Slave),
 
-    ariane_axi::req_t io_axi_slave_req;
-    ariane_axi::resp_t io_axi_slave_resp;
-    
-    axi_slave_connect i_io_axi_slave_connect (
-        .axi_req_o(io_axi_slave_req),
-        .axi_resp_i(io_axi_slave_resp),
-        .slave(master[ROM_AXI_SLAVE_IDX])
+        // Raw axi slave signals the given master will be connected to!
+        .axi_awid(io_axi_mem_awid),
+        .axi_awaddr(io_axi_mem_awaddr),
+        .axi_awlen(io_axi_mem_awlen),
+        .axi_awsize(io_axi_mem_awsize),
+        .axi_awburst(io_axi_mem_awburst),
+        .axi_awlock(io_axi_mem_awlock),
+        .axi_awcache(io_axi_mem_awcache),
+        .axi_awprot(io_axi_mem_awprot),
+        .axi_awregion(io_axi_mem_awregion),
+        .axi_awuser(io_axi_mem_awuser),
+        .axi_awqos(io_axi_mem_awqos),
+        .axi_awatop(io_axi_mem_awatop),
+        .axi_awvalid(io_axi_mem_awvalid),
+        .axi_awready(io_axi_mem_awready),
+        .axi_wdata(io_axi_mem_wdata),
+        .axi_wstrb(io_axi_mem_wstrb),
+        .axi_wlast(io_axi_mem_wlast),
+        .axi_wuser(io_axi_mem_wuser),
+        .axi_wvalid(io_axi_mem_wvalid),
+        .axi_wready(io_axi_mem_wready),
+        .axi_bid(io_axi_mem_bid),
+        .axi_bresp(io_axi_mem_bresp),
+        .axi_bvalid(io_axi_mem_bvalid),
+        .axi_buser(io_axi_mem_buser),
+        .axi_bready(io_axi_mem_bready),
+        .axi_arid(io_axi_mem_arid),
+        .axi_araddr(io_axi_mem_araddr),
+        .axi_arlen(io_axi_mem_arlen),
+        .axi_arsize(io_axi_mem_arsize),
+        .axi_arburst(io_axi_mem_arburst),
+        .axi_arlock(io_axi_mem_arlock),
+        .axi_arcache(io_axi_mem_arcache),
+        .axi_arprot(io_axi_mem_arprot),
+        .axi_arregion(io_axi_mem_arregion),
+        .axi_aruser(io_axi_mem_aruser),
+        .axi_arqos(io_axi_mem_arqos),
+        .axi_arvalid(io_axi_mem_arvalid),
+        .axi_arready(io_axi_mem_arready),
+        .axi_rid(io_axi_mem_rid),
+        .axi_rdata(io_axi_mem_rdata),
+        .axi_rresp(io_axi_mem_rresp),
+        .axi_rlast(io_axi_mem_rlast),
+        .axi_ruser(io_axi_mem_ruser),
+        .axi_rvalid(io_axi_mem_rvalid),
+        .axi_rready(io_axi_mem_rready)
     );
-
-
-    ariane_axi::aw_chan_t io_axi_slave_req_aw;
-    ariane_axi::w_chan_t io_axi_slave_req_w;
-    ariane_axi::ar_chan_t io_axi_slave_req_ar;
-
-    assign io_axi_slave_req_aw = io_axi_slave_req.aw;
-    assign io_axi_slave_req_w = io_axi_slave_req.w;
-    assign io_axi_slave_req_ar = io_axi_slave_req.ar;
-    assign io_axi_mem_awvalid = io_axi_slave_req.aw_valid;
-    assign io_axi_mem_wvalid = io_axi_slave_req.w_valid;
-    assign io_axi_mem_bready = io_axi_slave_req.b_ready;
-    assign io_axi_mem_arvalid = io_axi_slave_req.ar_valid;
-    assign io_axi_mem_rready = io_axi_slave_req.r_ready;
-
-    // io_axi_slave_req_aw aw_chant_t signals
-
-    assign io_axi_mem_awid = io_axi_slave_req_aw.id;
-    assign io_axi_mem_awaddr = io_axi_slave_req_aw.addr;
-    assign io_axi_mem_awlen = io_axi_slave_req_aw.len;
-    assign io_axi_mem_awsize = io_axi_slave_req_aw.size;
-    assign io_axi_mem_awburst = io_axi_slave_req_aw.burst;
-    assign io_axi_mem_awlock = io_axi_slave_req_aw.lock;
-    assign io_axi_mem_awcache = io_axi_slave_req_aw.cache;
-    assign io_axi_mem_awprot = io_axi_slave_req_aw.prot;
-    assign io_axi_mem_awqos = io_axi_slave_req_aw.qos;
-    assign io_axi_mem_awregion = io_axi_slave_req_aw.region;
-    assign io_axi_mem_awatop = io_axi_slave_req_aw.atop;
-    assign io_axi_mem_awuser = io_axi_slave_req_aw.user;
-
-    // w_chan_t io_axi_slave_req_w
-    assign io_axi_mem_wdata = io_axi_slave_req_w.data;
-    assign io_axi_mem_wstrb = io_axi_slave_req_w.strb;
-    assign io_axi_mem_wlast = io_axi_slave_req_w.last;
-    assign io_axi_mem_wuser = io_axi_slave_req_w.user;
-
-    assign io_axi_mem_arid = io_axi_slave_req_ar.id;
-    assign io_axi_mem_araddr = io_axi_slave_req_ar.addr;
-    assign io_axi_mem_arlen = io_axi_slave_req_ar.len;
-    assign io_axi_mem_arsize = io_axi_slave_req_ar.size;
-    assign io_axi_mem_arburst = io_axi_slave_req_ar.burst;
-    assign io_axi_mem_arlock = io_axi_slave_req_ar.lock;
-    assign io_axi_mem_arcache = io_axi_slave_req_ar.cache;
-    assign io_axi_mem_arprot = io_axi_slave_req_ar.prot;
-    assign io_axi_mem_arqos = io_axi_slave_req_ar.qos;
-    assign io_axi_mem_arregion = io_axi_slave_req_ar.region;
-    assign io_axi_mem_aruser = io_axi_slave_req_ar.user;
-
-    ariane_axi::b_chan_t io_axi_slave_resp_b_chan;
-    assign io_axi_slave_resp_b_chan.id = io_axi_mem_bid;
-    assign io_axi_slave_resp_b_chan.resp = io_axi_mem_bresp;
-    assign io_axi_slave_resp_b_chan.user = io_axi_mem_buser;
-
-    ariane_axi::r_chan_t io_axi_slave_resp_r_chan;
-    assign io_axi_slave_resp_r_chan.id = io_axi_mem_rid;
-    assign io_axi_slave_resp_r_chan.data = io_axi_mem_rdata;
-    assign io_axi_slave_resp_r_chan.resp = io_axi_mem_rresp;
-    assign io_axi_slave_resp_r_chan.last = io_axi_mem_rlast;
-    assign io_axi_slave_resp_r_chan.user = io_axi_mem_ruser;
-
-    assign io_axi_slave_resp.aw_ready = io_axi_mem_awready;
-    assign io_axi_slave_resp.ar_ready = io_axi_mem_arready;
-    assign io_axi_slave_resp.w_ready = io_axi_mem_wready;
-    assign io_axi_slave_resp.b_valid = io_axi_mem_bvalid;
-    assign io_axi_slave_resp.b = io_axi_slave_resp_b_chan;
-    assign io_axi_slave_resp.r_valid = io_axi_mem_rvalid;
-    assign io_axi_slave_resp.r = io_axi_slave_resp_r_chan;
-
 
 endmodule

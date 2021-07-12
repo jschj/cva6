@@ -164,7 +164,7 @@ module ariane_custom_tb_top2 #(
         .AXI_DATA_WIDTH ( AXI_DATA_WIDTH           ),
         .AXI_ID_WIDTH   ( IdWidthSlave ),
         .AXI_USER_WIDTH ( AXI_USER_WIDTH           )
-    ) master();
+    ) axiBus();
 
     axi2mem #(
         .AXI_ID_WIDTH   ( IdWidthSlave ),
@@ -174,7 +174,7 @@ module ariane_custom_tb_top2 #(
     ) i_axi2mem (
         .clk_i  ( clk        ),
         .rst_ni ( rst_n   ),
-        .slave  ( master ),
+        .slave  ( axiBus.Slave ),
         .req_o  ( req          ),
         .we_o   ( we           ),
         .addr_o ( addr         ),
@@ -197,87 +197,56 @@ module ariane_custom_tb_top2 #(
         .rdata_o    ( rdata                                                                       )
     );
 
+    raw_axi_slave_connect tbMemConnect (
+        .master(axiBus.Master),
 
-    ariane_axi::req_t mem_axi_slave_req;
-    ariane_axi::resp_t mem_axi_slave_resp;
-    axi_master_connect i_axi_master_connect_mem (
-        .axi_req_i(mem_axi_slave_req),
-        .axi_resp_o(mem_axi_slave_resp),
-        .master(master)
+        // Raw axi slave signals the given master will be connected to!
+        .axi_awid(io_axi_mem_awid),
+        .axi_awaddr(io_axi_mem_awaddr),
+        .axi_awlen(io_axi_mem_awlen),
+        .axi_awsize(io_axi_mem_awsize),
+        .axi_awburst(io_axi_mem_awburst),
+        .axi_awlock(io_axi_mem_awlock),
+        .axi_awcache(io_axi_mem_awcache),
+        .axi_awprot(io_axi_mem_awprot),
+        .axi_awregion(io_axi_mem_awregion),
+        .axi_awuser(io_axi_mem_awuser),
+        .axi_awqos(io_axi_mem_awqos),
+        .axi_awatop(io_axi_mem_awatop),
+        .axi_awvalid(io_axi_mem_awvalid),
+        .axi_awready(io_axi_mem_awready),
+        .axi_wdata(io_axi_mem_wdata),
+        .axi_wstrb(io_axi_mem_wstrb),
+        .axi_wlast(io_axi_mem_wlast),
+        .axi_wuser(io_axi_mem_wuser),
+        .axi_wvalid(io_axi_mem_wvalid),
+        .axi_wready(io_axi_mem_wready),
+        .axi_bid(io_axi_mem_bid),
+        .axi_bresp(io_axi_mem_bresp),
+        .axi_bvalid(io_axi_mem_bvalid),
+        .axi_buser(io_axi_mem_buser),
+        .axi_bready(io_axi_mem_bready),
+        .axi_arid(io_axi_mem_arid),
+        .axi_araddr(io_axi_mem_araddr),
+        .axi_arlen(io_axi_mem_arlen),
+        .axi_arsize(io_axi_mem_arsize),
+        .axi_arburst(io_axi_mem_arburst),
+        .axi_arlock(io_axi_mem_arlock),
+        .axi_arcache(io_axi_mem_arcache),
+        .axi_arprot(io_axi_mem_arprot),
+        .axi_arregion(io_axi_mem_arregion),
+        .axi_aruser(io_axi_mem_aruser),
+        .axi_arqos(io_axi_mem_arqos),
+        .axi_arvalid(io_axi_mem_arvalid),
+        .axi_arready(io_axi_mem_arready),
+        .axi_rid(io_axi_mem_rid),
+        .axi_rdata(io_axi_mem_rdata),
+        .axi_rresp(io_axi_mem_rresp),
+        .axi_rlast(io_axi_mem_rlast),
+        .axi_ruser(io_axi_mem_ruser),
+        .axi_rvalid(io_axi_mem_rvalid),
+        .axi_rready(io_axi_mem_rready)
     );
-
-    
-    /*
-        OUTPUT
-    */
-    ariane_axi::aw_chan_t mem_axi_slave_req_aw;
-    ariane_axi::w_chan_t mem_axi_slave_req_w;
-    ariane_axi::ar_chan_t mem_axi_slave_req_ar;
-
-    assign mem_axi_slave_req.aw = mem_axi_slave_req_aw;
-    assign mem_axi_slave_req.w = mem_axi_slave_req_w;
-    assign mem_axi_slave_req.ar = mem_axi_slave_req_ar;
-    assign mem_axi_slave_req.aw_valid = io_axi_mem_awvalid;
-    assign mem_axi_slave_req.w_valid = io_axi_mem_wvalid;
-    assign mem_axi_slave_req.b_ready = io_axi_mem_bready;
-    assign mem_axi_slave_req.ar_valid = io_axi_mem_arvalid;
-    assign mem_axi_slave_req.r_ready = io_axi_mem_rready;
-
-    // mem_axi_slave_req_aw aw_chant_t signals
-
-    assign mem_axi_slave_req_aw.id = io_axi_mem_awid;
-    assign mem_axi_slave_req_aw.addr = io_axi_mem_awaddr;
-    assign mem_axi_slave_req_aw.len = io_axi_mem_awlen;
-    assign mem_axi_slave_req_aw.size = io_axi_mem_awsize;
-    assign mem_axi_slave_req_aw.burst = io_axi_mem_awburst;
-    assign mem_axi_slave_req_aw.lock = io_axi_mem_awlock;
-    assign mem_axi_slave_req_aw.cache = io_axi_mem_awcache;
-    assign mem_axi_slave_req_aw.prot = io_axi_mem_awprot;
-    assign mem_axi_slave_req_aw.qos = io_axi_mem_awqos;
-    assign mem_axi_slave_req_aw.region = io_axi_mem_awregion;
-    assign mem_axi_slave_req_aw.atop = io_axi_mem_awatop;
-    assign mem_axi_slave_req_aw.user = io_axi_mem_awuser;
-
-    // w_chan_t mem_axi_slave_req_w
-    assign mem_axi_slave_req_w.data = io_axi_mem_wdata;
-    assign mem_axi_slave_req_w.strb = io_axi_mem_wstrb;
-    assign mem_axi_slave_req_w.last = io_axi_mem_wlast;
-    assign mem_axi_slave_req_w.user = io_axi_mem_wuser;
-
-    assign mem_axi_slave_req_ar.id = io_axi_mem_arid;
-    assign mem_axi_slave_req_ar.addr = io_axi_mem_araddr;
-    assign mem_axi_slave_req_ar.len = io_axi_mem_arlen;
-    assign mem_axi_slave_req_ar.size = io_axi_mem_arsize;
-    assign mem_axi_slave_req_ar.burst = io_axi_mem_arburst;
-    assign mem_axi_slave_req_ar.lock = io_axi_mem_arlock;
-    assign mem_axi_slave_req_ar.cache = io_axi_mem_arcache;
-    assign mem_axi_slave_req_ar.prot = io_axi_mem_arprot;
-    assign mem_axi_slave_req_ar.qos = io_axi_mem_arqos;
-    assign mem_axi_slave_req_ar.region = io_axi_mem_arregion;
-    assign mem_axi_slave_req_ar.user = io_axi_mem_aruser;
-
-    /*
-        INPUT
-    */
-    ariane_axi::b_chan_t mem_axi_slave_resp_b_chan;
-    assign io_axi_mem_bid = mem_axi_slave_resp_b_chan.id;
-    assign io_axi_mem_bresp = mem_axi_slave_resp_b_chan.resp;
-    assign io_axi_mem_buser = mem_axi_slave_resp_b_chan.user;
-
-    ariane_axi::r_chan_t mem_axi_slave_resp_r_chan;
-    assign io_axi_mem_rid = mem_axi_slave_resp_r_chan.id;
-    assign io_axi_mem_rdata = mem_axi_slave_resp_r_chan.data;
-    assign io_axi_mem_rresp = mem_axi_slave_resp_r_chan.resp;
-    assign io_axi_mem_rlast = mem_axi_slave_resp_r_chan.last;
-    assign io_axi_mem_ruser = mem_axi_slave_resp_r_chan.user;
-
-    assign io_axi_mem_awready = mem_axi_slave_resp.aw_ready;
-    assign io_axi_mem_arready = mem_axi_slave_resp.ar_ready;
-    assign io_axi_mem_wready = mem_axi_slave_resp.w_ready;
-    assign io_axi_mem_bvalid = mem_axi_slave_resp.b_valid;
-    assign mem_axi_slave_resp_b_chan = mem_axi_slave_resp.b;
-    assign io_axi_mem_rvalid = mem_axi_slave_resp.r_valid;
-    assign mem_axi_slave_resp_r_chan = mem_axi_slave_resp.r;
 
 endmodule
 
