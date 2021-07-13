@@ -5,7 +5,7 @@ module ariane_top #(
     parameter logic[63:0] DMEM_LENGTH     = 64'h04000,
     //parameter logic[63:0] DRAM_LENGTH     = 64'h04000,
 
-    parameter logic[63:0] DEBUG_BASE    = 64'h0000_0000,
+    parameter logic[63:0] DEBUG_BASE    = 64'h1200_0000,
     parameter logic[63:0] IMEM_BASE      = 64'h0000_0000,
     parameter logic[63:0] CLINT_BASE    = 64'h0200_0000,
     //parameter logic[63:0] DRAM_BASE     = 64'h0004_0000,
@@ -26,7 +26,7 @@ module ariane_top #(
     input  logic                         debug_req_i,  // debug request (async)
 
     // memory side, AXI Master
-    output  logic [AXI_ID_WIDTH-1:0]                             io_axi_mem_awid,
+    output  logic [AXI_ID_WIDTH-1:0]                io_axi_mem_awid,
     output  logic [63:0]                            io_axi_mem_awaddr,
     output  logic [7:0]                             io_axi_mem_awlen,
     output  logic [2:0]                             io_axi_mem_awsize,
@@ -46,12 +46,12 @@ module ariane_top #(
     output  logic [3:0]                             io_axi_mem_wuser,
     output  logic                                   io_axi_mem_wvalid,
     input   logic                                   io_axi_mem_wready,
-    input   logic [AXI_ID_WIDTH-1:0]                             io_axi_mem_bid,
+    input   logic [AXI_ID_WIDTH-1:0]                io_axi_mem_bid,
     input   logic [1:0]                             io_axi_mem_bresp,
     input   logic                                   io_axi_mem_bvalid,
     input   logic [3:0]                             io_axi_mem_buser,
     output  logic                                   io_axi_mem_bready,
-    output  logic [AXI_ID_WIDTH-1:0]                             io_axi_mem_arid,
+    output  logic [AXI_ID_WIDTH-1:0]                io_axi_mem_arid,
     output  logic [63:0]                            io_axi_mem_araddr,
     output  logic [7:0]                             io_axi_mem_arlen,
     output  logic [2:0]                             io_axi_mem_arsize,
@@ -64,7 +64,7 @@ module ariane_top #(
     output  logic [3:0]                             io_axi_mem_arqos,
     output  logic                                   io_axi_mem_arvalid,
     input   logic                                   io_axi_mem_arready,
-    input   logic [AXI_ID_WIDTH-1:0]                             io_axi_mem_rid,
+    input   logic [AXI_ID_WIDTH-1:0]                io_axi_mem_rid,
     input   logic [63:0]                            io_axi_mem_rdata,
     input   logic [1:0]                             io_axi_mem_rresp,
     input   logic                                   io_axi_mem_rlast,
