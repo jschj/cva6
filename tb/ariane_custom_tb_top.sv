@@ -372,7 +372,7 @@ module ariane_custom_tb_top #(
     logic                                   axi_dm_slave_rvalid;
     logic                                   axi_dm_slave_rready;
 
-    tapasco_dm_top (
+    tapasco_dm_top wrappedDM (
         .clk_i(clk_i),
         .rst_ni(rst_n),
         .debug_req_core_o(debug_req),
