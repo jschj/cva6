@@ -54,6 +54,13 @@ module ariane_custom_tb_top #(
     localparam DM_AXI_SLAVE_IDX = 1;
     localparam ROM_AXI_SLAVE_IDX = 0;
 
+    localparam logic[63:0] DebugLength    = 64'h1000;
+    localparam logic[63:0] ROMLength      = 64'h04000;
+    localparam logic[63:0] DMEMLength     = 64'h04000;
+    localparam logic[63:0] DebugBase = 64'h1200_0000;
+    localparam logic[63:0] ROMBase      = 64'h0000_0000;
+    localparam logic[63:0] DMEMBase     = 64'h0000_4000;
+
     localparam NB_SLAVE = 2;
     localparam NB_MASTER = 2;
     localparam IdWidth = 4;
@@ -158,7 +165,14 @@ module ariane_custom_tb_top #(
     logic                                   cva6_axi_rvalid;
     logic                                   cva6_axi_rready;
 
-    ariane_top wrappedCore (
+    ariane_top #(
+        .DEBUG_LENGTH(DebugLength),
+        .IMEM_LENGTH(ROMLength),
+        .DMEM_LENGTH(DMEMLength),
+        .DEBUG_BASE(DebugBase),
+        .IMEM_BASE(ROMBase),
+        .DMEM_BASE(DMEMBase)
+    ) wrappedCore (
         .clk_i(clk_i),
         .rst_ni(rst_n),
         .boot_addr_i(boot_addr_i),
