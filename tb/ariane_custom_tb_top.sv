@@ -73,12 +73,6 @@ module ariane_custom_tb_top #(
         .AXI_USER_WIDTH ( AXI_USER_WIDTH           )
     ) master[NB_MASTER-1:0]();
 
-    axi_master_connect i_axi_master_connect_ariane (
-        .axi_req_i(axi_ariane_req),
-        .axi_resp_o(axi_ariane_resp),
-        .master(slave[ARIANE_AXI_MASTER_IDX])
-    );
-
     logic                         req;
     logic                         we;
     logic [AXI_ADDRESS_WIDTH-1:0] addr;
