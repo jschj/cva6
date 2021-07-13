@@ -1,9 +1,10 @@
-module raw_axi_master_connect #(
+module raw_axi_master_struct_connect #(
     parameter int unsigned AXI_ID_WIDTH = 4,
     parameter type req_t = ariane_axi::req_t,
     parameter type resp_t = ariane_axi::resp_t
 )(
-    AXI_BUS.Slave slave,
+    input   req_t master_req_i,
+    output  resp_t resp_o,
 
     // Raw axi slave signals the given master will be connected to!
     output  logic [AXI_ID_WIDTH - 1:0]                           axi_awid,
@@ -52,70 +53,61 @@ module raw_axi_master_connect #(
     input   logic                                   axi_rvalid,
     output  logic                                   axi_rready
 );
+    // Connect request signals
+    assign axi_awvalid = master_req_i.aw_valid;
+    assign axi_wvalid = master_req_i.w_valid;
+    assign axi_bready = master_req_i.b_ready;
+    assign axi_arvalid = master_req_i.ar_valid;
+    assign axi_rready = master_req_i.r_ready;
 
-    req_t master_req_i;
-    resp_t resp_o;
+    // master_req_i.aw aw_chant_t signals
 
-    axi_slave_connect #(
-        .req_t(req_t),
-        .resp_t(resp_t)
-    ) masterCon (
-        .axi_req_o(master_req_i),
-        .axi_resp_i(resp_o),
-        .slave(slave)
-    );
+    assign axi_awid = master_req_i.aw.id;
+    assign axi_awaddr = master_req_i.aw.addr;
+    assign axi_awlen = master_req_i.aw.len;
+    assign axi_awsize = master_req_i.aw.size;
+    assign axi_awburst = master_req_i.aw.burst;
+    assign axi_awlock = master_req_i.aw.lock;
+    assign axi_awcache = master_req_i.aw.cache;
+    assign axi_awprot = master_req_i.aw.prot;
+    assign axi_awqos = master_req_i.aw.qos;
+    assign axi_awregion = master_req_i.aw.region;
+    assign axi_awatop = master_req_i.aw.atop;
+    assign axi_awuser = master_req_i.aw.user;
 
-    raw_axi_master_struct_connect #(
-        .AXI_ID_WIDTH(AXI_ID_WIDTH),
-        .req_t(req_t),
-        .resp_t(resp_t)
-    ) masterStructCon (
-        .master_req_i(master_req_i),
-        .resp_o(resp_o),
-        .axi_awid(axi_awid),
-        .axi_awaddr(axi_awaddr),
-        .axi_awlen(axi_awlen),
-        .axi_awsize(axi_awsize),
-        .axi_awburst(axi_awburst),
-        .axi_awlock(axi_awlock),
-        .axi_awcache(axi_awcache),
-        .axi_awprot(axi_awprot),
-        .axi_awregion(axi_awregion),
-        .axi_awuser(axi_awuser),
-        .axi_awqos(axi_awqos),
-        .axi_awatop(axi_awatop),
-        .axi_awvalid(axi_awvalid),
-        .axi_awready(axi_awready),
-        .axi_wdata(axi_wdata),
-        .axi_wstrb(axi_wstrb),
-        .axi_wlast(axi_wlast),
-        .axi_wuser(axi_wuser),
-        .axi_wvalid(axi_wvalid),
-        .axi_wready(axi_wready),
-        .axi_bid(axi_bid),
-        .axi_bresp(axi_bresp),
-        .axi_bvalid(axi_bvalid),
-        .axi_buser(axi_buser),
-        .axi_bready(axi_bready),
-        .axi_arid(axi_arid),
-        .axi_araddr(axi_araddr),
-        .axi_arlen(axi_arlen),
-        .axi_arsize(axi_arsize),
-        .axi_arburst(axi_arburst),
-        .axi_arlock(axi_arlock),
-        .axi_arcache(axi_arcache),
-        .axi_arprot(axi_arprot),
-        .axi_arregion(axi_arregion),
-        .axi_aruser(axi_aruser),
-        .axi_arqos(axi_arqos),
-        .axi_arvalid(axi_arvalid),
-        .axi_arready(axi_arready),
-        .axi_rid(axi_rid),
-        .axi_rdata(axi_rdata),
-        .axi_rresp(axi_rresp),
-        .axi_rlast(axi_rlast),
-        .axi_ruser(axi_ruser),
-        .axi_rvalid(axi_rvalid),
-        .axi_rready(axi_rready)
-    );
+    // w_chan_t master_req_i.w
+    assign axi_wdata = master_req_i.w.data;
+    assign axi_wstrb = master_req_i.w.strb;
+    assign axi_wlast = master_req_i.w.last;
+    assign axi_wuser = master_req_i.w.user;
+
+    assign axi_arid = master_req_i.ar.id;
+    assign axi_araddr = master_req_i.ar.addr;
+    assign axi_arlen = master_req_i.ar.len;
+    assign axi_arsize = master_req_i.ar.size;
+    assign axi_arburst = master_req_i.ar.burst;
+    assign axi_arlock = master_req_i.ar.lock;
+    assign axi_arcache = master_req_i.ar.cache;
+    assign axi_arprot = master_req_i.ar.prot;
+    assign axi_arqos = master_req_i.ar.qos;
+    assign axi_arregion = master_req_i.ar.region;
+    assign axi_aruser = master_req_i.ar.user;
+
+    // Connect response signals!
+    assign resp_o.b.id = axi_bid;
+    assign resp_o.b.resp = axi_bresp;
+    assign resp_o.b.user = axi_buser;
+
+    assign resp_o.r.id = axi_rid;
+    assign resp_o.r.data = axi_rdata;
+    assign resp_o.r.resp = axi_rresp;
+    assign resp_o.r.last = axi_rlast;
+    assign resp_o.r.user = axi_ruser;
+
+    assign resp_o.aw_ready = axi_awready;
+    assign resp_o.ar_ready = axi_arready;
+    assign resp_o.w_ready = axi_wready;
+    assign resp_o.b_valid = axi_bvalid;
+    assign resp_o.r_valid = axi_rvalid;
+
 endmodule
