@@ -20,7 +20,9 @@ module axi_adapter #(
   parameter int unsigned DATA_WIDTH            = 256,
   parameter logic        CRITICAL_WORD_FIRST   = 0, // the AXI subsystem needs to support wrapping reads for this feature
   parameter int unsigned AXI_ID_WIDTH          = 10,
-  parameter int unsigned CACHELINE_BYTE_OFFSET = 8
+  parameter int unsigned CACHELINE_BYTE_OFFSET = 8,
+  parameter type req_t = ariane_axi::req_t,
+  parameter type resp_t = ariane_axi::resp_t
 )(
   input  logic                             clk_i,  // Clock
   input  logic                             rst_ni, // Asynchronous reset active low
@@ -43,8 +45,8 @@ module axi_adapter #(
   output logic [63:0]                      critical_word_o,
   output logic                             critical_word_valid_o,
   // AXI port
-  output ariane_axi::req_t                 axi_req_o,
-  input  ariane_axi::resp_t                axi_resp_i
+  output req_t                 axi_req_o,
+  input  resp_t                axi_resp_i
 );
   localparam BURST_SIZE = DATA_WIDTH/64-1;
   localparam ADDR_INDEX = ($clog2(DATA_WIDTH/64) > 0) ? $clog2(DATA_WIDTH/64) : 1;

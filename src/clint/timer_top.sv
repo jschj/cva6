@@ -73,79 +73,14 @@ module timer_top #(
     /*
         OUTPUT
     */
-    ariane_axi::req_t axi_req_o;
-    ariane_axi::aw_chan_t axi_req_o_aw;
-    ariane_axi::w_chan_t axi_req_o_w;
-    ariane_axi::ar_chan_t axi_req_o_ar;
-
-    assign axi_req_o.aw = axi_req_o_aw;
-    assign axi_req_o.w = axi_req_o_w;
-    assign axi_req_o.ar = axi_req_o_ar;
-    assign axi_req_o.aw_valid = axi_timer_awvalid;
-    assign axi_req_o.w_valid = axi_timer_wvalid;
-    assign axi_req_o.b_ready = axi_timer_bready;
-    assign axi_req_o.ar_valid = axi_timer_arvalid;
-    assign axi_req_o.r_ready = axi_timer_rready;
-
-    // axi_req_o_aw aw_chant_t signals
-
-    assign axi_req_o_aw.id = axi_timer_awid;
-    assign axi_req_o_aw.addr = axi_timer_awaddr;
-    assign axi_req_o_aw.len = axi_timer_awlen;
-    assign axi_req_o_aw.size = axi_timer_awsize;
-    assign axi_req_o_aw.burst = axi_timer_awburst;
-    assign axi_req_o_aw.lock = axi_timer_awlock;
-    assign axi_req_o_aw.cache = axi_timer_awcache;
-    assign axi_req_o_aw.prot = axi_timer_awprot;
-    assign axi_req_o_aw.qos = axi_timer_awqos;
-    assign axi_req_o_aw.region = axi_timer_awregion;
-    assign axi_req_o_aw.atop = axi_timer_awatop;
-    assign axi_req_o_aw.user = axi_timer_awuser;
-
-    // w_chan_t axi_req_o_w
-    assign axi_req_o_w.data = axi_timer_wdata;
-    assign axi_req_o_w.strb = axi_timer_wstrb;
-    assign axi_req_o_w.last = axi_timer_wlast;
-    assign axi_req_o_w.user = axi_timer_wuser;
-
-    assign axi_req_o_ar.id = axi_timer_arid;
-    assign axi_req_o_ar.addr = axi_timer_araddr;
-    assign axi_req_o_ar.len = axi_timer_arlen;
-    assign axi_req_o_ar.size = axi_timer_arsize;
-    assign axi_req_o_ar.burst = axi_timer_arburst;
-    assign axi_req_o_ar.lock = axi_timer_arlock;
-    assign axi_req_o_ar.cache = axi_timer_arcache;
-    assign axi_req_o_ar.prot = axi_timer_arprot;
-    assign axi_req_o_ar.qos = axi_timer_arqos;
-    assign axi_req_o_ar.region = axi_timer_arregion;
-    assign axi_req_o_ar.user = axi_timer_aruser;
-
-    /*
-        INPUT
-    */
-    ariane_axi::b_chan_t axi_resp_i_b_chan;
-    assign axi_timer_bid = axi_resp_i_b_chan.id;
-    assign axi_timer_bresp = axi_resp_i_b_chan.resp;
-    assign axi_timer_buser = axi_resp_i_b_chan.user;
-
-    ariane_axi::r_chan_t axi_resp_i_r_chan;
-    assign axi_timer_rid = axi_resp_i_r_chan.id;
-    assign axi_timer_rdata = axi_resp_i_r_chan.data;
-    assign axi_timer_rresp = axi_resp_i_r_chan.resp;
-    assign axi_timer_rlast = axi_resp_i_r_chan.last;
-    assign axi_timer_ruser = axi_resp_i_r_chan.user;
-
-    ariane_axi::resp_t axi_resp_i;
-    assign axi_timer_awready = axi_resp_i.aw_ready;
-    assign axi_timer_arready = axi_resp_i.ar_ready;
-    assign axi_timer_wready = axi_resp_i.w_ready;
-    assign axi_timer_bvalid = axi_resp_i.b_valid;
-    assign axi_resp_i_b_chan = axi_resp_i.b;
-    assign axi_timer_rvalid = axi_resp_i.r_valid;
-    assign axi_resp_i_r_chan = axi_resp_i.r;
+    tapasco_axi::req_slv_t axi_req_o;
+    tapasco_axi::resp_slv_t axi_resp_i;
 
     clint#(
-
+        .AXI_ID_WIDTH(tapasco_axi::IdWidthSlave),
+        .NR_CORES(NR_CORES),
+        .req_t(tapasco_axi::req_slv_t),
+        .resp_t(tapasco_axi::resp_slv_t)
     ) timer(
         .clk_i(clk_i),
         .rst_ni(rst_ni),
@@ -158,6 +93,61 @@ module timer_top #(
         // memory side, AXI Master
         .axi_req_i(axi_req_o),
         .axi_resp_o(axi_resp_i)
+    );
+
+    // Connect slave pins
+    raw_axi_slave_connect #(
+        .AXI_ID_WIDTH(tapasco_axi::IdWidthSlave),
+        .req_t(tapasco_axi::req_slv_t),
+        .resp_t(tapasco_axi::resp_slv_t)
+    ) dmMemConnect (
+        .master(master.Master),
+
+        .axi_awid(axi_dm_slave_awid),
+        .axi_awaddr(axi_dm_slave_awaddr),
+        .axi_awlen(axi_dm_slave_awlen),
+        .axi_awsize(axi_dm_slave_awsize),
+        .axi_awburst(axi_dm_slave_awburst),
+        .axi_awlock(axi_dm_slave_awlock),
+        .axi_awcache(axi_dm_slave_awcache),
+        .axi_awprot(axi_dm_slave_awprot),
+        .axi_awregion(axi_dm_slave_awregion),
+        .axi_awuser(axi_dm_slave_awuser),
+        .axi_awqos(axi_dm_slave_awqos),
+        .axi_awatop(axi_dm_slave_awatop),
+        .axi_awvalid(axi_dm_slave_awvalid),
+        .axi_awready(axi_dm_slave_awready),
+        .axi_wdata(axi_dm_slave_wdata),
+        .axi_wstrb(axi_dm_slave_wstrb),
+        .axi_wlast(axi_dm_slave_wlast),
+        .axi_wuser(axi_dm_slave_wuser),
+        .axi_wvalid(axi_dm_slave_wvalid),
+        .axi_wready(axi_dm_slave_wready),
+        .axi_bid(axi_dm_slave_bid),
+        .axi_bresp(axi_dm_slave_bresp),
+        .axi_bvalid(axi_dm_slave_bvalid),
+        .axi_buser(axi_dm_slave_buser),
+        .axi_bready(axi_dm_slave_bready),
+        .axi_arid(axi_dm_slave_arid),
+        .axi_araddr(axi_dm_slave_araddr),
+        .axi_arlen(axi_dm_slave_arlen),
+        .axi_arsize(axi_dm_slave_arsize),
+        .axi_arburst(axi_dm_slave_arburst),
+        .axi_arlock(axi_dm_slave_arlock),
+        .axi_arcache(axi_dm_slave_arcache),
+        .axi_arprot(axi_dm_slave_arprot),
+        .axi_arregion(axi_dm_slave_arregion),
+        .axi_aruser(axi_dm_slave_aruser),
+        .axi_arqos(axi_dm_slave_arqos),
+        .axi_arvalid(axi_dm_slave_arvalid),
+        .axi_arready(axi_dm_slave_arready),
+        .axi_rid(axi_dm_slave_rid),
+        .axi_rdata(axi_dm_slave_rdata),
+        .axi_rresp(axi_dm_slave_rresp),
+        .axi_rlast(axi_dm_slave_rlast),
+        .axi_ruser(axi_dm_slave_ruser),
+        .axi_rvalid(axi_dm_slave_rvalid),
+        .axi_rready(axi_dm_slave_rready)
     );
 
 endmodule

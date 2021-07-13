@@ -17,11 +17,7 @@ module ariane_custom_tb_top2 #(
     parameter int unsigned AXI_USER_WIDTH    = 1,
     parameter int unsigned AXI_ADDRESS_WIDTH = 64,
     parameter int unsigned AXI_DATA_WIDTH    = 64,
-    parameter int unsigned NUM_WORDS         = 32768,         // memory size
-    localparam NB_SLAVE = 2,
-    localparam NB_MASTER = 2,
-    localparam IdWidth = 4,
-    localparam IdWidthSlave = IdWidth + $clog2(NB_SLAVE)
+    parameter int unsigned NUM_WORDS         = 32768         // memory size
 ) (
     input  logic                         clk,
     input  logic                         rst_n,
@@ -44,7 +40,7 @@ module ariane_custom_tb_top2 #(
 
 );
 
-    logic [IdWidthSlave-1:0]                io_axi_mem_awid;
+    logic [tapasco_axi::IdWidthSlave-1:0]                io_axi_mem_awid;
     logic [63:0]                            io_axi_mem_awaddr;
     logic [7:0]                             io_axi_mem_awlen;
     logic [2:0]                             io_axi_mem_awsize;
@@ -64,12 +60,12 @@ module ariane_custom_tb_top2 #(
     logic [3:0]                             io_axi_mem_wuser;
     logic                                   io_axi_mem_wvalid;
     logic                                   io_axi_mem_wready;
-    logic [IdWidthSlave-1:0]                io_axi_mem_bid;
+    logic [tapasco_axi::IdWidthSlave-1:0]                io_axi_mem_bid;
     logic [1:0]                             io_axi_mem_bresp;
     logic                                   io_axi_mem_bvalid;
     logic [3:0]                             io_axi_mem_buser;
     logic                                   io_axi_mem_bready;
-    logic [IdWidthSlave-1:0]                io_axi_mem_arid;
+    logic [tapasco_axi::IdWidthSlave-1:0]                io_axi_mem_arid;
     logic [63:0]                            io_axi_mem_araddr;
     logic [7:0]                             io_axi_mem_arlen;
     logic [2:0]                             io_axi_mem_arsize;
@@ -82,7 +78,7 @@ module ariane_custom_tb_top2 #(
     logic [3:0]                             io_axi_mem_arqos;
     logic                                   io_axi_mem_arvalid;
     logic                                   io_axi_mem_arready;
-    logic [IdWidthSlave-1:0]                io_axi_mem_rid;
+    logic [tapasco_axi::IdWidthSlave-1:0]                io_axi_mem_rid;
     logic [63:0]                            io_axi_mem_rdata;
     logic [1:0]                             io_axi_mem_rresp;
     logic                                   io_axi_mem_rlast;
@@ -162,12 +158,12 @@ module ariane_custom_tb_top2 #(
     AXI_BUS #(
         .AXI_ADDR_WIDTH ( AXI_ADDRESS_WIDTH        ),
         .AXI_DATA_WIDTH ( AXI_DATA_WIDTH           ),
-        .AXI_ID_WIDTH   ( IdWidthSlave ),
+        .AXI_ID_WIDTH   ( tapasco_axi::IdWidthSlave ),
         .AXI_USER_WIDTH ( AXI_USER_WIDTH           )
     ) axiBus();
 
     axi2mem #(
-        .AXI_ID_WIDTH   ( IdWidthSlave ),
+        .AXI_ID_WIDTH   ( tapasco_axi::IdWidthSlave ),
         .AXI_ADDR_WIDTH ( AXI_ADDRESS_WIDTH        ),
         .AXI_DATA_WIDTH ( AXI_DATA_WIDTH           ),
         .AXI_USER_WIDTH ( AXI_USER_WIDTH           )
@@ -197,7 +193,11 @@ module ariane_custom_tb_top2 #(
         .rdata_o    ( rdata                                                                       )
     );
 
-    raw_axi_slave_connect tbMemConnect (
+    raw_axi_slave_connect #(
+        .AXI_ID_WIDTH(tapasco_axi::IdWidthSlave),
+        .req_t(tapasco_axi::req_slv_t),
+        .resp_t(tapasco_axi::resp_slv_t)
+    ) tbMemConnect (
         .master(axiBus.Master),
 
         // Raw axi slave signals the given master will be connected to!

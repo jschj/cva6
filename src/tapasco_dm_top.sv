@@ -110,10 +110,6 @@ module tapasco_dm_top #(
     input  logic                                   axi_dm_slave_rready
 );
 
-
-    ariane_axi::req_t dm_axi_master_req;
-    ariane_axi::resp_t dm_axi_master_resp;
-
     logic                dm_slave_req;
     logic                dm_slave_we;
     logic [64-1:0]       dm_slave_addr;
@@ -212,7 +208,7 @@ module tapasco_dm_top #(
     ) i_dm_axi2mem (
         .clk_i      ( clk_i                     ),
         .rst_ni     ( rst_ni                    ),
-        .slave      ( master ),
+        .slave      ( master.Slave ),
         .req_o      ( dm_slave_req              ),
         .we_o       ( dm_slave_we               ),
         .addr_o     ( dm_slave_addr             ),
@@ -221,17 +217,13 @@ module tapasco_dm_top #(
         .data_i     ( dm_slave_rdata            )
     );
 
-    ariane_axi::req_t dm_axi_slave_req;
-    ariane_axi::resp_t dm_axi_slave_resp;
-    axi_master_connect i_axi_master_connect_dm (
-        .axi_req_i(dm_axi_slave_req),
-        .axi_resp_o(dm_axi_slave_resp),
-        .master(master)
-    );
+
+    ariane_axi::req_t dm_axi_master_req;
+    ariane_axi::resp_t dm_axi_master_resp;
 
     axi_adapter #(
         .DATA_WIDTH            ( AXI_DATA_WIDTH            ),
-        .AXI_ID_WIDTH(AXI_MASTER_ID_WIDTH)
+        .AXI_ID_WIDTH          (AXI_MASTER_ID_WIDTH)
     ) i_dm_axi_master (
         .clk_i                 ( clk_i                     ),
         .rst_ni                ( rst_ni                    ),
@@ -255,146 +247,111 @@ module tapasco_dm_top #(
     );
 
     // Connect master pins
-    ariane_axi::aw_chan_t dm_axi_master_req_aw;
-    ariane_axi::w_chan_t dm_axi_master_req_w;
-    ariane_axi::ar_chan_t dm_axi_master_req_ar;
+    raw_axi_master_struct_connect #(
+        .AXI_ID_WIDTH(AXI_MASTER_ID_WIDTH)
+    ) dmMasterConnect (
+        .master_req_i(dm_axi_master_req),
+        .resp_o(dm_axi_master_resp),
 
-    assign dm_axi_master_req_aw = dm_axi_master_req.aw;
-    assign dm_axi_master_req_w = dm_axi_master_req.w;
-    assign dm_axi_master_req_ar = dm_axi_master_req.ar;
-    assign axi_dm_master_awvalid = dm_axi_master_req.aw_valid;
-    assign axi_dm_master_wvalid = dm_axi_master_req.w_valid;
-    assign axi_dm_master_bready = dm_axi_master_req.b_ready;
-    assign axi_dm_master_arvalid = dm_axi_master_req.ar_valid;
-    assign axi_dm_master_rready = dm_axi_master_req.r_ready;
-
-    // dm_axi_master_req_aw aw_chant_t signals
-
-    assign axi_dm_master_awid = dm_axi_master_req_aw.id;
-    assign axi_dm_master_awaddr = dm_axi_master_req_aw.addr;
-    assign axi_dm_master_awlen = dm_axi_master_req_aw.len;
-    assign axi_dm_master_awsize = dm_axi_master_req_aw.size;
-    assign axi_dm_master_awburst = dm_axi_master_req_aw.burst;
-    assign axi_dm_master_awlock = dm_axi_master_req_aw.lock;
-    assign axi_dm_master_awcache = dm_axi_master_req_aw.cache;
-    assign axi_dm_master_awprot = dm_axi_master_req_aw.prot;
-    assign axi_dm_master_awqos = dm_axi_master_req_aw.qos;
-    assign axi_dm_master_awregion = dm_axi_master_req_aw.region;
-    assign axi_dm_master_awatop = dm_axi_master_req_aw.atop;
-    assign axi_dm_master_awuser = dm_axi_master_req_aw.user;
-
-    // w_chan_t dm_axi_master_req_w
-    assign axi_dm_master_wdata = dm_axi_master_req_w.data;
-    assign axi_dm_master_wstrb = dm_axi_master_req_w.strb;
-    assign axi_dm_master_wlast = dm_axi_master_req_w.last;
-    assign axi_dm_master_wuser = dm_axi_master_req_w.user;
-
-    assign axi_dm_master_arid = dm_axi_master_req_ar.id;
-    assign axi_dm_master_araddr = dm_axi_master_req_ar.addr;
-    assign axi_dm_master_arlen = dm_axi_master_req_ar.len;
-    assign axi_dm_master_arsize = dm_axi_master_req_ar.size;
-    assign axi_dm_master_arburst = dm_axi_master_req_ar.burst;
-    assign axi_dm_master_arlock = dm_axi_master_req_ar.lock;
-    assign axi_dm_master_arcache = dm_axi_master_req_ar.cache;
-    assign axi_dm_master_arprot = dm_axi_master_req_ar.prot;
-    assign axi_dm_master_arqos = dm_axi_master_req_ar.qos;
-    assign axi_dm_master_arregion = dm_axi_master_req_ar.region;
-    assign axi_dm_master_aruser = dm_axi_master_req_ar.user;
-
-    ariane_axi::b_chan_t dm_axi_master_resp_b_chan;
-    assign dm_axi_master_resp_b_chan.id = axi_dm_master_bid;
-    assign dm_axi_master_resp_b_chan.resp = axi_dm_master_bresp;
-    assign dm_axi_master_resp_b_chan.user = axi_dm_master_buser;
-
-    ariane_axi::r_chan_t dm_axi_master_resp_r_chan;
-    assign dm_axi_master_resp_r_chan.id = axi_dm_master_rid;
-    assign dm_axi_master_resp_r_chan.data = axi_dm_master_rdata;
-    assign dm_axi_master_resp_r_chan.resp = axi_dm_master_rresp;
-    assign dm_axi_master_resp_r_chan.last = axi_dm_master_rlast;
-    assign dm_axi_master_resp_r_chan.user = axi_dm_master_ruser;
-
-    assign dm_axi_master_resp.aw_ready = axi_dm_master_awready;
-    assign dm_axi_master_resp.ar_ready = axi_dm_master_arready;
-    assign dm_axi_master_resp.w_ready = axi_dm_master_wready;
-    assign dm_axi_master_resp.b_valid = axi_dm_master_bvalid;
-    assign dm_axi_master_resp.b = dm_axi_master_resp_b_chan;
-    assign dm_axi_master_resp.r_valid = axi_dm_master_rvalid;
-    assign dm_axi_master_resp.r = dm_axi_master_resp_r_chan;
-
+        .axi_awid(axi_dm_master_awid),
+        .axi_awaddr(axi_dm_master_awaddr),
+        .axi_awlen(axi_dm_master_awlen),
+        .axi_awsize(axi_dm_master_awsize),
+        .axi_awburst(axi_dm_master_awburst),
+        .axi_awlock(axi_dm_master_awlock),
+        .axi_awcache(axi_dm_master_awcache),
+        .axi_awprot(axi_dm_master_awprot),
+        .axi_awregion(axi_dm_master_awregion),
+        .axi_awuser(axi_dm_master_awuser),
+        .axi_awqos(axi_dm_master_awqos),
+        .axi_awatop(axi_dm_master_awatop),
+        .axi_awvalid(axi_dm_master_awvalid),
+        .axi_awready(axi_dm_master_awready),
+        .axi_wdata(axi_dm_master_wdata),
+        .axi_wstrb(axi_dm_master_wstrb),
+        .axi_wlast(axi_dm_master_wlast),
+        .axi_wuser(axi_dm_master_wuser),
+        .axi_wvalid(axi_dm_master_wvalid),
+        .axi_wready(axi_dm_master_wready),
+        .axi_bid(axi_dm_master_bid),
+        .axi_bresp(axi_dm_master_bresp),
+        .axi_bvalid(axi_dm_master_bvalid),
+        .axi_buser(axi_dm_master_buser),
+        .axi_bready(axi_dm_master_bready),
+        .axi_arid(axi_dm_master_arid),
+        .axi_araddr(axi_dm_master_araddr),
+        .axi_arlen(axi_dm_master_arlen),
+        .axi_arsize(axi_dm_master_arsize),
+        .axi_arburst(axi_dm_master_arburst),
+        .axi_arlock(axi_dm_master_arlock),
+        .axi_arcache(axi_dm_master_arcache),
+        .axi_arprot(axi_dm_master_arprot),
+        .axi_arregion(axi_dm_master_arregion),
+        .axi_aruser(axi_dm_master_aruser),
+        .axi_arqos(axi_dm_master_arqos),
+        .axi_arvalid(axi_dm_master_arvalid),
+        .axi_arready(axi_dm_master_arready),
+        .axi_rid(axi_dm_master_rid),
+        .axi_rdata(axi_dm_master_rdata),
+        .axi_rresp(axi_dm_master_rresp),
+        .axi_rlast(axi_dm_master_rlast),
+        .axi_ruser(axi_dm_master_ruser),
+        .axi_rvalid(axi_dm_master_rvalid),
+        .axi_rready(axi_dm_master_rready)
+    );
 
     // Connect slave pins
-    
-    /*
-        OUTPUT
-    */
-    ariane_axi::aw_chan_t dm_axi_slave_req_aw;
-    ariane_axi::w_chan_t dm_axi_slave_req_w;
-    ariane_axi::ar_chan_t dm_axi_slave_req_ar;
+    raw_axi_slave_connect #(
+        .AXI_ID_WIDTH(tapasco_axi::IdWidthSlave),
+        .req_t(tapasco_axi::req_slv_t),
+        .resp_t(tapasco_axi::resp_slv_t)
+    ) dmMemConnect (
+        .master(master.Master),
 
-    assign dm_axi_slave_req.aw = dm_axi_slave_req_aw;
-    assign dm_axi_slave_req.w = dm_axi_slave_req_w;
-    assign dm_axi_slave_req.ar = dm_axi_slave_req_ar;
-    assign dm_axi_slave_req.aw_valid = axi_dm_slave_awvalid;
-    assign dm_axi_slave_req.w_valid = axi_dm_slave_wvalid;
-    assign dm_axi_slave_req.b_ready = axi_dm_slave_bready;
-    assign dm_axi_slave_req.ar_valid = axi_dm_slave_arvalid;
-    assign dm_axi_slave_req.r_ready = axi_dm_slave_rready;
-
-    // dm_axi_slave_req_aw aw_chant_t signals
-
-    assign dm_axi_slave_req_aw.id = axi_dm_slave_awid;
-    assign dm_axi_slave_req_aw.addr = axi_dm_slave_awaddr;
-    assign dm_axi_slave_req_aw.len = axi_dm_slave_awlen;
-    assign dm_axi_slave_req_aw.size = axi_dm_slave_awsize;
-    assign dm_axi_slave_req_aw.burst = axi_dm_slave_awburst;
-    assign dm_axi_slave_req_aw.lock = axi_dm_slave_awlock;
-    assign dm_axi_slave_req_aw.cache = axi_dm_slave_awcache;
-    assign dm_axi_slave_req_aw.prot = axi_dm_slave_awprot;
-    assign dm_axi_slave_req_aw.qos = axi_dm_slave_awqos;
-    assign dm_axi_slave_req_aw.region = axi_dm_slave_awregion;
-    assign dm_axi_slave_req_aw.atop = axi_dm_slave_awatop;
-    assign dm_axi_slave_req_aw.user = axi_dm_slave_awuser;
-
-    // w_chan_t dm_axi_slave_req_w
-    assign dm_axi_slave_req_w.data = axi_dm_slave_wdata;
-    assign dm_axi_slave_req_w.strb = axi_dm_slave_wstrb;
-    assign dm_axi_slave_req_w.last = axi_dm_slave_wlast;
-    assign dm_axi_slave_req_w.user = axi_dm_slave_wuser;
-
-    assign dm_axi_slave_req_ar.id = axi_dm_slave_arid;
-    assign dm_axi_slave_req_ar.addr = axi_dm_slave_araddr;
-    assign dm_axi_slave_req_ar.len = axi_dm_slave_arlen;
-    assign dm_axi_slave_req_ar.size = axi_dm_slave_arsize;
-    assign dm_axi_slave_req_ar.burst = axi_dm_slave_arburst;
-    assign dm_axi_slave_req_ar.lock = axi_dm_slave_arlock;
-    assign dm_axi_slave_req_ar.cache = axi_dm_slave_arcache;
-    assign dm_axi_slave_req_ar.prot = axi_dm_slave_arprot;
-    assign dm_axi_slave_req_ar.qos = axi_dm_slave_arqos;
-    assign dm_axi_slave_req_ar.region = axi_dm_slave_arregion;
-    assign dm_axi_slave_req_ar.user = axi_dm_slave_aruser;
-
-    /*
-        INPUT
-    */
-    ariane_axi::b_chan_t dm_axi_slave_resp_b_chan;
-    assign axi_dm_slave_bid = dm_axi_slave_resp_b_chan.id;
-    assign axi_dm_slave_bresp = dm_axi_slave_resp_b_chan.resp;
-    assign axi_dm_slave_buser = dm_axi_slave_resp_b_chan.user;
-
-    ariane_axi::r_chan_t dm_axi_slave_resp_r_chan;
-    assign axi_dm_slave_rid = dm_axi_slave_resp_r_chan.id;
-    assign axi_dm_slave_rdata = dm_axi_slave_resp_r_chan.data;
-    assign axi_dm_slave_rresp = dm_axi_slave_resp_r_chan.resp;
-    assign axi_dm_slave_rlast = dm_axi_slave_resp_r_chan.last;
-    assign axi_dm_slave_ruser = dm_axi_slave_resp_r_chan.user;
-
-    assign axi_dm_slave_awready = dm_axi_slave_resp.aw_ready;
-    assign axi_dm_slave_arready = dm_axi_slave_resp.ar_ready;
-    assign axi_dm_slave_wready = dm_axi_slave_resp.w_ready;
-    assign axi_dm_slave_bvalid = dm_axi_slave_resp.b_valid;
-    assign dm_axi_slave_resp_b_chan = dm_axi_slave_resp.b;
-    assign axi_dm_slave_rvalid = dm_axi_slave_resp.r_valid;
-    assign dm_axi_slave_resp_r_chan = dm_axi_slave_resp.r;
-
-
+        .axi_awid(axi_dm_slave_awid),
+        .axi_awaddr(axi_dm_slave_awaddr),
+        .axi_awlen(axi_dm_slave_awlen),
+        .axi_awsize(axi_dm_slave_awsize),
+        .axi_awburst(axi_dm_slave_awburst),
+        .axi_awlock(axi_dm_slave_awlock),
+        .axi_awcache(axi_dm_slave_awcache),
+        .axi_awprot(axi_dm_slave_awprot),
+        .axi_awregion(axi_dm_slave_awregion),
+        .axi_awuser(axi_dm_slave_awuser),
+        .axi_awqos(axi_dm_slave_awqos),
+        .axi_awatop(axi_dm_slave_awatop),
+        .axi_awvalid(axi_dm_slave_awvalid),
+        .axi_awready(axi_dm_slave_awready),
+        .axi_wdata(axi_dm_slave_wdata),
+        .axi_wstrb(axi_dm_slave_wstrb),
+        .axi_wlast(axi_dm_slave_wlast),
+        .axi_wuser(axi_dm_slave_wuser),
+        .axi_wvalid(axi_dm_slave_wvalid),
+        .axi_wready(axi_dm_slave_wready),
+        .axi_bid(axi_dm_slave_bid),
+        .axi_bresp(axi_dm_slave_bresp),
+        .axi_bvalid(axi_dm_slave_bvalid),
+        .axi_buser(axi_dm_slave_buser),
+        .axi_bready(axi_dm_slave_bready),
+        .axi_arid(axi_dm_slave_arid),
+        .axi_araddr(axi_dm_slave_araddr),
+        .axi_arlen(axi_dm_slave_arlen),
+        .axi_arsize(axi_dm_slave_arsize),
+        .axi_arburst(axi_dm_slave_arburst),
+        .axi_arlock(axi_dm_slave_arlock),
+        .axi_arcache(axi_dm_slave_arcache),
+        .axi_arprot(axi_dm_slave_arprot),
+        .axi_arregion(axi_dm_slave_arregion),
+        .axi_aruser(axi_dm_slave_aruser),
+        .axi_arqos(axi_dm_slave_arqos),
+        .axi_arvalid(axi_dm_slave_arvalid),
+        .axi_arready(axi_dm_slave_arready),
+        .axi_rid(axi_dm_slave_rid),
+        .axi_rdata(axi_dm_slave_rdata),
+        .axi_rresp(axi_dm_slave_rresp),
+        .axi_rlast(axi_dm_slave_rlast),
+        .axi_ruser(axi_dm_slave_ruser),
+        .axi_rvalid(axi_dm_slave_rvalid),
+        .axi_rready(axi_dm_slave_rready)
+    );
 endmodule

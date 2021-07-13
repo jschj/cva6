@@ -150,8 +150,8 @@ module ariane_custom_top #(
         NrPMPEntries:           8
     };
 
-    ariane_axi::req_t    axi_ariane_req;
-    ariane_axi::resp_t   axi_ariane_resp;
+    tapasco_axi::req_t    axi_ariane_req;
+    tapasco_axi::resp_t   axi_ariane_resp;
 
     ariane#(
         .ArianeCfg(ArianeCfg)
@@ -173,7 +173,10 @@ module ariane_custom_top #(
         .axi_resp_i(axi_ariane_resp)
     );
 
-    axi_master_connect i_axi_master_connect_ariane (
+    axi_master_connect #(
+        .req_t(tapasco_axi::req_t),
+        .resp_t(tapasco_axi::resp_t)
+    ) i_axi_master_connect_ariane (
         .axi_req_i(axi_ariane_req),
         .axi_resp_o(axi_ariane_resp),
         .master(slave[ARIANE_AXI_MASTER_IDX].Master)
@@ -282,11 +285,13 @@ module ariane_custom_top #(
         .data_i     ( dm_slave_rdata            )
     );
 
-    ariane_axi::req_t dm_axi_master_req;
-    ariane_axi::resp_t dm_axi_master_resp;
+    tapasco_axi::req_t dm_axi_master_req;
+    tapasco_axi::resp_t dm_axi_master_resp;
     axi_adapter #(
         .DATA_WIDTH            ( AXI_DATA_WIDTH            ),
-        .AXI_ID_WIDTH          ( IdWidth)
+        .AXI_ID_WIDTH          ( IdWidth),
+        .req_t                 (tapasco_axi::req_t),
+        .resp_t                (tapasco_axi::resp_t)
     ) i_dm_axi_master (
         .clk_i                 ( clk_i                     ),
         .rst_ni                ( rst_ni                    ),
@@ -309,7 +314,10 @@ module ariane_custom_top #(
         .axi_resp_i            ( dm_axi_master_resp        )
     );
 
-    axi_master_connect i_dm_axi_master_connect (
+    axi_master_connect #(
+        .req_t(tapasco_axi::req_t),
+        .resp_t(tapasco_axi::resp_t)
+    ) i_dm_axi_master_connect (
         .axi_req_i(dm_axi_master_req),
         .axi_resp_o(dm_axi_master_resp),
         .master(slave[DM_AXI_MASTER_IDX].Master)
@@ -345,7 +353,11 @@ module ariane_custom_top #(
     );
 
     // Connect master 
-    raw_axi_master_connect axiMemConnector (
+    raw_axi_master_connect #(
+        .AXI_ID_WIDTH(IdWidthSlave)
+        .req_t(tapasco_axi::req_slv_t),
+        .resp_t(tapasco_axi::resp_slv_t)
+    ) axiMemConnector (
         .slave(master[ROM_AXI_SLAVE_IDX].Slave),
 
         // Raw axi slave signals the given master will be connected to!

@@ -73,74 +73,6 @@ module ariane_top #(
     output  logic                                   io_axi_mem_rready
 );
 
-    ariane_axi::req_t axi_req_o;
-    ariane_axi::aw_chan_t axi_req_o_aw;
-    ariane_axi::w_chan_t axi_req_o_w;
-    ariane_axi::ar_chan_t axi_req_o_ar;
-
-    assign axi_req_o_aw = axi_req_o.aw;
-    assign axi_req_o_w = axi_req_o.w;
-    assign axi_req_o_ar = axi_req_o.ar;
-    assign io_axi_mem_awvalid = axi_req_o.aw_valid;
-    assign io_axi_mem_wvalid = axi_req_o.w_valid;
-    assign io_axi_mem_bready = axi_req_o.b_ready;
-    assign io_axi_mem_arvalid = axi_req_o.ar_valid;
-    assign io_axi_mem_rready = axi_req_o.r_ready;
-
-    // axi_req_o_aw aw_chant_t signals
-
-    assign io_axi_mem_awid = axi_req_o_aw.id;
-    assign io_axi_mem_awaddr = axi_req_o_aw.addr;
-    assign io_axi_mem_awlen = axi_req_o_aw.len;
-    assign io_axi_mem_awsize = axi_req_o_aw.size;
-    assign io_axi_mem_awburst = axi_req_o_aw.burst;
-    assign io_axi_mem_awlock = axi_req_o_aw.lock;
-    assign io_axi_mem_awcache = axi_req_o_aw.cache;
-    assign io_axi_mem_awprot = axi_req_o_aw.prot;
-    assign io_axi_mem_awqos = axi_req_o_aw.qos;
-    assign io_axi_mem_awregion = axi_req_o_aw.region;
-    assign io_axi_mem_awatop = axi_req_o_aw.atop;
-    assign io_axi_mem_awuser = axi_req_o_aw.user;
-
-    // w_chan_t axi_req_o_w
-    assign io_axi_mem_wdata = axi_req_o_w.data;
-    assign io_axi_mem_wstrb = axi_req_o_w.strb;
-    assign io_axi_mem_wlast = axi_req_o_w.last;
-    assign io_axi_mem_wuser = axi_req_o_w.user;
-
-    assign io_axi_mem_arid = axi_req_o_ar.id;
-    assign io_axi_mem_araddr = axi_req_o_ar.addr;
-    assign io_axi_mem_arlen = axi_req_o_ar.len;
-    assign io_axi_mem_arsize = axi_req_o_ar.size;
-    assign io_axi_mem_arburst = axi_req_o_ar.burst;
-    assign io_axi_mem_arlock = axi_req_o_ar.lock;
-    assign io_axi_mem_arcache = axi_req_o_ar.cache;
-    assign io_axi_mem_arprot = axi_req_o_ar.prot;
-    assign io_axi_mem_arqos = axi_req_o_ar.qos;
-    assign io_axi_mem_arregion = axi_req_o_ar.region;
-    assign io_axi_mem_aruser = axi_req_o_ar.user;
-
-    ariane_axi::b_chan_t axi_resp_i_b_chan;
-    assign axi_resp_i_b_chan.id = io_axi_mem_bid;
-    assign axi_resp_i_b_chan.resp = io_axi_mem_bresp;
-    assign axi_resp_i_b_chan.user = io_axi_mem_buser;
-
-    ariane_axi::r_chan_t axi_resp_i_r_chan;
-    assign axi_resp_i_r_chan.id = io_axi_mem_rid;
-    assign axi_resp_i_r_chan.data = io_axi_mem_rdata;
-    assign axi_resp_i_r_chan.resp = io_axi_mem_rresp;
-    assign axi_resp_i_r_chan.last = io_axi_mem_rlast;
-    assign axi_resp_i_r_chan.user = io_axi_mem_ruser;
-
-    ariane_axi::resp_t axi_resp_i;
-    assign axi_resp_i.aw_ready = io_axi_mem_awready;
-    assign axi_resp_i.ar_ready = io_axi_mem_arready;
-    assign axi_resp_i.w_ready = io_axi_mem_wready;
-    assign axi_resp_i.b_valid = io_axi_mem_bvalid;
-    assign axi_resp_i.b = axi_resp_i_b_chan;
-    assign axi_resp_i.r_valid = io_axi_mem_rvalid;
-    assign axi_resp_i.r = axi_resp_i_r_chan;
-
     localparam ariane_pkg::ariane_cfg_t ArianeCfg = '{
         RASDepth: 2,
         BTBEntries: 32,
@@ -171,6 +103,8 @@ module ariane_top #(
         NrPMPEntries:           8
     };
 
+    ariane_axi::req_t axi_req_o;
+    ariane_axi::resp_t axi_resp_i;
 
     ariane#(
         .ArianeCfg(ArianeCfg)
@@ -190,6 +124,56 @@ module ariane_top #(
         // memory side, AXI Master
         .axi_req_o(axi_req_o),
         .axi_resp_i(axi_resp_i)
+    );
+
+    raw_axi_master_struct_connect arianeAxiMasterCon (
+        .master_req_i(axi_req_o),
+        .resp_o(axi_resp_i),
+        .axi_awid(io_axi_mem_awid),
+        .axi_awaddr(io_axi_mem_awaddr),
+        .axi_awlen(io_axi_mem_awlen),
+        .axi_awsize(io_axi_mem_awsize),
+        .axi_awburst(io_axi_mem_awburst),
+        .axi_awlock(io_axi_mem_awlock),
+        .axi_awcache(io_axi_mem_awcache),
+        .axi_awprot(io_axi_mem_awprot),
+        .axi_awregion(io_axi_mem_awregion),
+        .axi_awuser(io_axi_mem_awuser),
+        .axi_awqos(io_axi_mem_awqos),
+        .axi_awatop(io_axi_mem_awatop),
+        .axi_awvalid(io_axi_mem_awvalid),
+        .axi_awready(io_axi_mem_awready),
+        .axi_wdata(io_axi_mem_wdata),
+        .axi_wstrb(io_axi_mem_wstrb),
+        .axi_wlast(io_axi_mem_wlast),
+        .axi_wuser(io_axi_mem_wuser),
+        .axi_wvalid(io_axi_mem_wvalid),
+        .axi_wready(io_axi_mem_wready),
+        .axi_bid(io_axi_mem_bid),
+        .axi_bresp(io_axi_mem_bresp),
+        .axi_bvalid(io_axi_mem_bvalid),
+        .axi_buser(io_axi_mem_buser),
+        .axi_bready(io_axi_mem_bready),
+        .axi_arid(io_axi_mem_arid),
+        .axi_araddr(io_axi_mem_araddr),
+        .axi_arlen(io_axi_mem_arlen),
+        .axi_arsize(io_axi_mem_arsize),
+        .axi_arburst(io_axi_mem_arburst),
+        .axi_arlock(io_axi_mem_arlock),
+        .axi_arcache(io_axi_mem_arcache),
+        .axi_arprot(io_axi_mem_arprot),
+        .axi_arregion(io_axi_mem_arregion),
+        .axi_aruser(io_axi_mem_aruser),
+        .axi_arqos(io_axi_mem_arqos),
+        .axi_arvalid(io_axi_mem_arvalid),
+        .axi_arready(io_axi_mem_arready),
+        .axi_rid(io_axi_mem_rid),
+        .axi_rdata(io_axi_mem_rdata),
+        .axi_rresp(io_axi_mem_rresp),
+        .axi_rlast(io_axi_mem_rlast),
+        .axi_ruser(io_axi_mem_ruser),
+        .axi_rvalid(io_axi_mem_rvalid),
+        .axi_rready(io_axi_mem_rready)
     );
 
 endmodule
