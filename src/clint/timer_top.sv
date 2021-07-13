@@ -100,7 +100,7 @@ module timer_top #(
         .AXI_ID_WIDTH(tapasco_axi::IdWidthSlave),
         .req_t(tapasco_axi::req_slv_t),
         .resp_t(tapasco_axi::resp_slv_t)
-    ) dmMemConnect (
+    ) timerAxiConnect (
         .master_req_o(axi_req_o),
         .resp_i(axi_resp_i),
 
