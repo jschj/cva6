@@ -354,7 +354,7 @@ module ariane_custom_top #(
 
     // Connect master 
     raw_axi_master_connect #(
-        .AXI_ID_WIDTH(IdWidthSlave)
+        .AXI_ID_WIDTH(IdWidthSlave),
         .req_t(tapasco_axi::req_slv_t),
         .resp_t(tapasco_axi::resp_slv_t)
     ) axiMemConnector (
