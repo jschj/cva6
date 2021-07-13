@@ -96,12 +96,13 @@ module timer_top #(
     );
 
     // Connect slave pins
-    raw_axi_slave_connect #(
+    raw_axi_slave_struct_connect #(
         .AXI_ID_WIDTH(tapasco_axi::IdWidthSlave),
         .req_t(tapasco_axi::req_slv_t),
         .resp_t(tapasco_axi::resp_slv_t)
     ) dmMemConnect (
-        .master(master.Master),
+        .master_req_o(axi_req_o),
+        .resp_i(axi_resp_i),
 
         .axi_awid(axi_dm_slave_awid),
         .axi_awaddr(axi_dm_slave_awaddr),
