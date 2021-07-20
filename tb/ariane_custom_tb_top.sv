@@ -625,7 +625,7 @@ module ariane_custom_tb_top #(
         }),
         .end_addr_i   ({
             DebugBase    + DebugLength - 1,
-            ROMBase      + ROMLength - 1
+            ROMBase      + NUM_WORDS - 1
         }),
         .valid_rule_i ({(NB_REGION * NB_MASTER){1'b1}})
     );
