@@ -652,6 +652,7 @@ module tb_sram #(
     logic [ADDR_WIDTH-1:0] raddr_q;
 
     initial begin
+        /*
         ram[2048] = 64'h00000000_00000539;
         ram[78] = 64'h00000000_00008067;
         ram[77] = 64'h02010113_01812403;
@@ -725,6 +726,7 @@ module tb_sram #(
         ram[2] = 64'h00000313_00000293;
         ram[1] = 64'h00000213_00000193;
         ram[0] = 64'h00000113_00000093;
+        */
     end
 
     always_ff @(posedge clk_i) begin
